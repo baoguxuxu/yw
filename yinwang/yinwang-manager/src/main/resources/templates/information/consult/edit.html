@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+						<input id="id" name="id" th:value="${consult.id}"  type="hidden">
+							<div class="form-group">	
+								<label class="col-sm-3 control-label">类型:</label>
+								<div class="col-sm-8">
+									<select id="type" name="type" data-placeholder="选择类别" class="form-control chosen-select" tabindex="2" style="width: 100%">
+										<option value="0" th:selected="${consult.type == 0}">物业动态</option>
+										<option value="1" th:selected="${consult.type == 1}">小区广告</option>
+										<option value="2" th:selected="${consult.type == 2}">小区新闻</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-3 control-label">推送小区：</label>
+								<div class="col-sm-4">
+									<input id="forNames" name="forNames" th:value="${consult.forNames}" class="form-control" type="text">
+									<div class="zTreeDemoBackground left">
+										<ul id="treeDemo" class="ztree"></ul>
+									</div>
+									<input id="forIds" name="forIds" th:value="${consult.forIds}" class="form-control" type="hidden">
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-3 control-label">标题：</label>
+								<div class="col-sm-8">
+									<input id="title" name="title" th:value="${consult.title}" class="form-control" type="text" maxlength="30">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">上传图片：</label>
+								<div class="col-sm-8">
+									<input class="form-control" id="imgFile" style="display: none;" type="file" name="imgFile" onchange="udpateFileUrl(this)" />
+									<label for="imgFile"><img width="100" height="100" id="fileImgimgFile" alt="点击上传图片" th:src="${consult.url}" src="${HOME_URL }/images/dianUploud.png"></label>
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-3 control-label">是否禁用：</label>
+								<div class="col-sm-8">
+									<input name="isDisabled" value="0" type="radio" th:checked="${consult.isDisabled == 0}"> 开启
+									<input name="isDisabled" value="1" type="radio" th:checked="${consult.isDisabled == 1}"> 禁用
+								</div>
+							</div>
+							<div class="form-group">	
+								<input id="details" name="details"  th:value="${consult.details}" type="hidden"> 
+								<label class="col-sm-1 control-label">内容：</label>
+								<div class="col-sm-11">
+									<div class="ibox-content no-padding">
+										<div id="content_sn" class="summernote"></div>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-3">
+									<button type="submit" class="btn btn-primary">提交</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+	</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/appjs/information/consult/edit.js"></script>
+	<SCRIPT type="text/javascript">
+		var setting = {
+			view: {
+				selectedMulti: false
+			},
+			check: {
+				enable: true,
+				chkboxType: {"Y":"s", "N":"s"}
+			},
+			data: {
+				simpleData: {
+					enable: true
+				}
+			},
+			callback: {
+				beforeCheck: beforeCheck,
+				onCheck: onCheck
+			}
+		};
+
+		 var zNodes = '';
+		/* var zNodes =[
+			{ id:0, pId:-1, name:"全部小区 ", open:true},
+			{ id:1, pId:0, name:"小区  1-1"},
+			{ id:2, pId:0, name:"小区  1-2", open:true},
+			{ id:3, pId:0, name:"小区  1-3"},
+			{ id:4, pId:0, name:"小区  1-4"},
+		]; */
+		
+		var code, log, className = "dark";
+		function beforeCheck(treeId, treeNode) {
+			className = (className === "dark" ? "":"dark");
+			return (treeNode.doCheck !== false);
+		}
+		function onCheck(e, treeId, treeNode) {
+			var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+			nodes = zTree.getCheckedNodes(true),
+			v = "";
+			ids = "";
+			for (var i=0, l=nodes.length; i<l; i++) {
+				v += nodes[i].name + ",";
+				if(nodes[i].pId != -1 && nodes[i].pId != null){
+					ids += nodes[i].id + ",";
+				}
+			}
+			if (v.length > 0 ) v = v.substring(0, v.length-1);
+			if (ids.length > 0 ) ids = ids.substring(0, ids.length-1);
+			$("#forNames").val(v);
+			$("#forIds").val(ids);
+		}		
+
+		function setAutoTrigger(e) {
+			var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+			zTree.setting.check.autoCheckTrigger = $("#autoCallbackTrigger").attr("checked");
+			$("#autoCheckTriggerValue").html(zTree.setting.check.autoCheckTrigger ? "true" : "false");
+		}
+
+		$(document).ready(function(){
+			$.ajax({
+				cache : true,
+				type : "POST",
+				url : "/information/consult/getUserPlotList?consult_id="+$("#id").val(),
+				data : {},// 你的formid
+				async : false,
+				error : function(request) {
+					parent.layer.alert("Connection error");
+				},
+				success : function(data) {
+					if (data.code == 0) {
+						zNodes = data.plotList;
+						$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+					} else {
+						parent.layer.alert(data.msg)
+					}
+				}
+			});
+			
+		});
+		
+		function udpateFileUrl(obj){
+			var fileURL = getObjectURL(obj.files[0]);
+			if(fileURL) {
+				$("#fileImgimgFile").attr("src", fileURL) ;
+			}
+		}
+		
+		//建立一個可存取到該file的url
+		function getObjectURL(file) {
+			var url = null ; 
+			if (window.createObjectURL!=undefined) { // basic
+				url = window.createObjectURL(file) ;
+			} else if (window.URL!=undefined) { // mozilla(firefox)
+				url = window.URL.createObjectURL(file) ;
+			} else if (window.webkitURL!=undefined) { // webkit or chrome
+				url = window.webkitURL.createObjectURL(file) ;
+			}
+			return url;
+		}
+	</SCRIPT>
+</body>
+</html>

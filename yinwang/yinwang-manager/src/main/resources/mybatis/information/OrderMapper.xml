@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.OrderDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.OrderDO">
+		select `id`,`order_no`,`out_order_no`,`total_fee`,`body`,`attach`,`create_time`,`create_user`,`pay_time`,`pay_way`,`trade_type`,`status`,`trade_no`,`spbill_create_ip`,`notify_url`,`queue_key`,`appid`,`mch_id`,`call_request_body`,`group` from pay_order where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.OrderDO">
+		select
+		po.id,
+		po.body as body,
+		tu.nickname as nickname,
+		po.attach,
+		po.total_fee as totalFee,
+		'6' as month,
+		po.create_time as createTime,
+		CASE
+		WHEN po.`group` = '1' THEN
+		'现金'
+		ELSE
+		'线上'
+		END as groupType
+		FROM pay_order po,t_user tu
+		where po.create_user = tu.id
+
+		<where>
+			<if test="nickname != null and nickname != ''"> and tu.nickname like concat('%',#{nickname},'%') </if>
+			<if test="statime != null and statime != ''"> and po.create_time &gt;= #{statime} </if>
+			<if test="endTime != null and endTime != ''"> and po.create_time &lt;= #{endTime} </if>
+		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) FROM pay_order po,t_user tu
+		where po.create_user = tu.id
+		 <where>
+			 <if test="nickname != null and nickname != ''"> and tu.nickname like concat('%',#{nickname},'%') </if>
+			 <if test="statime != null and statime != ''"> and po.create_time &gt;= #{statime} </if>
+			 <if test="endTime != null and endTime != ''"> and po.create_time &lt;= #{endTime} </if>
+		 </where>
+	</select>
+	 
+	<insert id="save" parameterType="com.yinwang.information.domain.OrderDO" useGeneratedKeys="true" keyProperty="id">
+		insert into pay_order
+		(
+			`order_no`, 
+			`out_order_no`, 
+			`total_fee`, 
+			`body`, 
+			`attach`, 
+			`create_time`, 
+			`create_user`, 
+			`pay_time`, 
+			`pay_way`, 
+			`trade_type`, 
+			`status`, 
+			`trade_no`, 
+			`spbill_create_ip`, 
+			`notify_url`, 
+			`queue_key`, 
+			`appid`, 
+			`mch_id`, 
+			`call_request_body`, 
+			`group`
+		)
+		values
+		(
+			#{orderNo}, 
+			#{outOrderNo}, 
+			#{totalFee}, 
+			#{body}, 
+			#{attach}, 
+			#{createTime}, 
+			#{createUser}, 
+			#{payTime}, 
+			#{payWay}, 
+			#{tradeType}, 
+			#{status}, 
+			#{tradeNo}, 
+			#{spbillCreateIp}, 
+			#{notifyUrl}, 
+			#{queueKey}, 
+			#{appid}, 
+			#{mchId}, 
+			#{callRequestBody}, 
+			#{group}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.OrderDO">
+		update pay_order 
+		<set>
+			<if test="orderNo != null">`order_no` = #{orderNo}, </if>
+			<if test="outOrderNo != null">`out_order_no` = #{outOrderNo}, </if>
+			<if test="totalFee != null">`total_fee` = #{totalFee}, </if>
+			<if test="body != null">`body` = #{body}, </if>
+			<if test="attach != null">`attach` = #{attach}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}, </if>
+			<if test="payTime != null">`pay_time` = #{payTime}, </if>
+			<if test="payWay != null">`pay_way` = #{payWay}, </if>
+			<if test="tradeType != null">`trade_type` = #{tradeType}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="tradeNo != null">`trade_no` = #{tradeNo}, </if>
+			<if test="spbillCreateIp != null">`spbill_create_ip` = #{spbillCreateIp}, </if>
+			<if test="notifyUrl != null">`notify_url` = #{notifyUrl}, </if>
+			<if test="queueKey != null">`queue_key` = #{queueKey}, </if>
+			<if test="appid != null">`appid` = #{appid}, </if>
+			<if test="mchId != null">`mch_id` = #{mchId}, </if>
+			<if test="callRequestBody != null">`call_request_body` = #{callRequestBody}, </if>
+			<if test="group != null">`group` = #{group}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from pay_order where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from pay_order where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+
+
+
+	<select id="listData" resultType="map">
+		select
+		<if test="type != null and type==1 " >DATE_FORMAT(po.create_time,'%Y-%m-%d') as createtime,</if>
+		<if test="type != null and type==2 " >DATE_FORMAT(po.create_time,'%Y-%m') as createtime,</if>
+		sum(po.total_fee) as totalfee,
+		count(1) as countsum
+		from pay_order po
+		<if test="type != null and type==1 " >GROUP BY DATE_FORMAT(po.create_time,'%Y-%m-%d')</if>
+		<if test="type != null and type==2 " >GROUP BY DATE_FORMAT(po.create_time,'%Y-%m')</if>
+
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="countData" resultType="int">
+		select count(*) from (
+		select count(*)
+		from pay_order po
+		<if test="type != null and type==1 ">GROUP BY DATE_FORMAT(po.create_time,'%Y-%m-%d')</if>
+		<if test="type != null and type==2 ">GROUP BY DATE_FORMAT(po.create_time,'%Y-%m')</if>
+		) a
+	</select>
+
+</mapper>

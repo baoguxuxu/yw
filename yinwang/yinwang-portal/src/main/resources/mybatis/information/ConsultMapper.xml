@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.ConsultDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.ConsultDO">
+		select 
+		`id`,`type`,`for_names`,`for_ids`,`title`,`url`,`is_disabled`,
+		`details`,`browse_num`,`add_time`,date_format(add_time, '%Y-%m-%d %H:%i:%s') as addTime1,
+		`update_time`,`delete_flag` 
+		from t_consult where id = #{value}
+	</select>
+
+	<select id="list" resultType="java.util.Map">
+		select distinct
+			tc.id,
+			tc.title,
+			date_format(tc.add_time, '%Y-%m-%d %H:%i:%s') as addTime,
+			tc.url
+		from t_consult tc,t_consult_plot tcp,t_user_plot tup
+		where tc.id = tcp.consult_id and tcp.plot_id = tup.plot_id
+		and tc.type = #{type}
+		and tc.is_disabled = 0
+		<if test="userId != null">and tup.user_id = #{userId} </if>
+		ORDER BY tc.add_time DESC
+	</select>
+	
+	<update id="update" parameterType="com.yinwang.information.domain.ConsultDO">
+		update t_consult 
+		<set>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="forNames != null">`for_names` = #{forNames}, </if>
+			<if test="forIds != null">`for_ids` = #{forIds}, </if>
+			<if test="title != null">`title` = #{title}, </if>
+			<if test="url != null">`url` = #{url}, </if>
+			<if test="isDisabled != null">`is_disabled` = #{isDisabled}, </if>
+			<if test="details != null">`details` = #{details}, </if>
+			<if test="browseNum != null">`browse_num` = #{browseNum}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="deleteFlag != null">`delete_flag` = #{deleteFlag}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+						<input id="id" name="id" th:value="${complaint.id}"  type="hidden">
+							<div class="form-group">	
+								<label class="col-sm-3 control-label">投诉类型：</label>
+								<div class="col-sm-8">
+									<input id="type" name="type" th:value="${complaint.type}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">标题：</label>
+								<div class="col-sm-8">
+									<input id="title" name="title" th:value="${complaint.title}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">投诉内容：</label>
+								<div class="col-sm-8">
+									<input id="content" name="content" th:value="${complaint.content}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">小区ID：</label>
+								<div class="col-sm-8">
+									<input id="plotId" name="plotId" th:value="${complaint.plotId}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">投诉人id：</label>
+								<div class="col-sm-8">
+									<input id="userId" name="userId" th:value="${complaint.userId}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-3 control-label">状态0:处理1:完成：</label>
+								<div class="col-sm-8">
+									<input id="statue" name="statue" th:value="${complaint.statue}" class="form-control" type="text">
+								</div>
+							</div>
+																					<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-3">
+									<button type="submit" class="btn btn-primary">提交</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+	</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/appjs/information/complaint/edit.js">
+	</script>
+</body>
+</html>

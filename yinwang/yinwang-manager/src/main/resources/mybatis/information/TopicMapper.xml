@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.TopicDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.TopicDO">
+		select `id`,`questionnaire_id`,`name`,`details`,`is_radio`,`add_time`,`update_time`,`delete_flag` from t_topic where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.TopicDO">
+		select `id`,`questionnaire_id`,`name`,`details`,`is_radio`,`add_time`,`update_time`,`delete_flag` from t_topic
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="questionnaireId != null and questionnaireId != ''"> and questionnaire_id = #{questionnaireId} </if>
+		  		  <if test="name != null and name != ''"> and name like concat('%',#{name},'%')  </if>
+		  		  <if test="details != null and details != ''"> and details = #{details} </if>
+		  		  <if test="isRadio != null and isRadio != ''"> and is_radio = #{isRadio} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_topic
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="questionnaireId != null and questionnaireId != ''"> and questionnaire_id = #{questionnaireId} </if>
+		  		  <if test="name != null and name != ''"> and name like concat('%',#{name},'%') </if>
+		  		  <if test="details != null and details != ''"> and details = #{details} </if>
+		  		  <if test="isRadio != null and isRadio != ''"> and is_radio = #{isRadio} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.yinwang.information.domain.TopicDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_topic
+		(
+			`questionnaire_id`, 
+			`name`, 
+			`details`, 
+			`is_radio`, 
+			`add_time`, 
+			`update_time`, 
+			`delete_flag`
+		)
+		values
+		(
+			#{questionnaireId}, 
+			#{name}, 
+			#{details}, 
+			#{isRadio}, 
+			#{addTime}, 
+			#{updateTime}, 
+			#{deleteFlag}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.TopicDO">
+		update t_topic 
+		<set>
+			<if test="questionnaireId != null">`questionnaire_id` = #{questionnaireId}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="details != null">`details` = #{details}, </if>
+			<if test="isRadio != null">`is_radio` = #{isRadio}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="deleteFlag != null">`delete_flag` = #{deleteFlag}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_topic where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_topic where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

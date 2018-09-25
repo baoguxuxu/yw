@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.RepairDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.RepairDO">
+		select `id`,`user_id`,`add_id`,`type_id`,`category_id`,`repair_time`,`details`,`add_time`,`money`,`statue` from t_repair where id = #{value}
+	</select>
+	<select id="getRepair" resultType="java.util.Map">
+		select
+			tr.id,
+			tu.`name`  as userName,
+			tp.`name` as plotNmae,
+			tu.phone,
+			tr.category_id,
+			tmt2.name as categoryName,
+			tr.type_id,
+			tmt1.`name` as typeName,
+			tr.add_time,
+			date_format(tr.repair_time, '%Y-%m-%d %H:%i:%s') AS repair_time,
+			tup.address,
+			IFNULL(tr.money,'') as money,
+			tr.statue
+		from t_repair tr,t_user_plot tup,t_plot tp,t_user tu,t_maintain_type tmt1,t_maintain_type tmt2
+		where tr.add_id = tup.id and tup.plot_id = tp.id and tr.user_id = tu.id and tr.type_id = tmt1.id and tr.category_id = tmt2.id
+		and tr.id = #{value}
+	</select>
+
+	<select id="list" resultType="java.util.Map">
+		select
+			tr.id,
+			tu.`name`  as userName,
+			tp.`name` as plotNmae,
+			tup.address,
+			tu.phone,
+			tr.category_id,
+			tmt2.name as categoryName,
+			tr.type_id,
+			tmt1.`name` as typeName,
+			tr.add_time,
+			tr.repair_time,
+			IFNULL(tr.money,'') as money,
+			tru.`name` as reNames,
+			tru.phone as rePhone,
+			IFNULL(tr.details,'') as details,
+			tr.statue,
+			tr.repair_statue,
+			tr.repair_user_id
+		from (t_repair tr,t_user_plot tup,t_plot tp,t_user tu,t_maintain_type tmt1,t_maintain_type tmt2)
+		LEFT JOIN t_repair_user tru ON tru.id = tr.repair_user_id
+		where tr.add_id = tup.id and tup.plot_id = tp.id and tr.user_id = tu.id and tr.type_id = tmt1.id and tr.category_id = tmt2.id
+		<if test="userName != null and userName != ''"> and tu.`name` like concat('%',#{userName},'%') </if>
+		<if test="phone != null and phone != ''"> and tu.phone like  concat('%',#{phone},'%') </if>
+		<if test="reNames != null and reNames != ''"> and tru.`name` like concat('%',#{reNames},'%') </if>
+		<if test="repair_statue != null and repair_statue != '' and repair_statue != '10'"> and tr.repair_statue = #{repair_statue} </if>
+		<if test="repair_statue != null and repair_statue != '' and repair_statue == '10' "> and tr.statue = 5 </if>
+		<if test="addStaTime != null and addStaTime != ''"> and tr.add_time &gt;= #{addStaTime} </if>
+		<if test="addEndTime != null and addEndTime != ''"> and tr.add_time &lt;= #{addEndTime} </if>
+		<if test="rstaTime != null and rstaTime != ''"> and tr.repair_time &gt;= #{rstaTime} </if>
+		<if test="rendTime != null and rendTime != ''"> and tr.repair_time &lt;= #{rendTime} </if>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	 	<select id="listMap" resultType="java.util.Map">
+		select 
+			tr.id,
+			tmt1.`name` as typeName,
+			tmt2.`name` as categoryName,
+			tr.statue,
+			tup.address,
+			date_format(tr.add_time, '%Y-%m-%d %H:%i:%s') as addTime,
+			IFNULL(tr.money,'') as money
+		from t_repair tr,t_user_plot tup,t_maintain_type tmt1,t_maintain_type tmt2
+		where tr.add_id = tup.id and tr.type_id = tmt1.id and tr.category_id = tmt2.id
+		<if test="userId != null and userId != ''"> and tr.user_id = #{userId} </if>
+		<if test="statue != null and statue != '' and statue != '-1' "> and tr.statue = #{statue} </if>
+	</select>
+	<select id="count" resultType="int">
+		select count(1) 
+		from (t_repair tr,t_user_plot tup,t_plot tp,t_user tu,t_maintain_type tmt1,t_maintain_type tmt2)
+		LEFT JOIN t_repair_user tru ON tru.id = tr.repair_user_id
+		where tr.add_id = tup.id and tup.plot_id = tp.id and tr.user_id = tu.id and tr.type_id = tmt1.id and tr.category_id = tmt2.id
+		<if test="userName != null and userName != ''"> and tu.`name` like concat('%',#{userName},'%') </if>
+		<if test="phone != null and phone != ''"> and tu.phone like  concat('%',#{phone},'%') </if>
+		<if test="reNames != null and reNames != ''"> and tru.`name` like concat('%',#{reNames},'%') </if>
+		<if test="repair_statue != null and repair_statue != '' and repair_statue == '10'"> and tr.repair_statue = #{repair_statue} </if>
+		<if test="addStaTime != null and addStaTime != ''"> and tr.add_time &gt;= #{addStaTime} </if>
+		<if test="addEndTime != null and addEndTime != ''"> and tr.add_time &lt;= #{addEndTime} </if>
+		<if test="rstaTime != null and rstaTime != ''"> and tr.repair_time &gt;= #{rstaTime} </if>
+		<if test="rendTime != null and rendTime != ''"> and tr.repair_time &lt;= #{rendTime} </if>
+	</select>
+	 
+	<insert id="save" parameterType="com.yinwang.information.domain.RepairDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_repair
+		(
+			`user_id`, 
+			`add_id`, 
+			`type_id`, 
+			`category_id`, 
+			`repair_time`, 
+			`details`, 
+			`add_time`, 
+			`money`, 
+			`statue`
+		)
+		values
+		(
+			#{userId}, 
+			#{addId}, 
+			#{typeId}, 
+			#{categoryId}, 
+			#{repairTime}, 
+			#{details}, 
+			#{addTime}, 
+			#{money}, 
+			#{statue}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.RepairDO">
+		update t_repair 
+		<set>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="addId != null">`add_id` = #{addId}, </if>
+			<if test="typeId != null">`type_id` = #{typeId}, </if>
+			<if test="categoryId != null">`category_id` = #{categoryId}, </if>
+			<if test="repairTime != null">`repair_time` = #{repairTime}, </if>
+			<if test="details != null">`details` = #{details}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="money != null">`money` = #{money}, </if>
+			<if test="statue != null">`statue` = #{statue}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_repair where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_repair where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.owneruser.dao.OwnerUserDao">
+
+	<select id="get" resultType="com.yinwang.owneruser.domain.OwnerUserDO">
+				SELECT
+	t.`id`,
+	t.`open_id`,
+	t.`nickname`,
+	t.`password`,
+	t.`phone`,
+	t.`heard_url`,
+	t.`name`,
+	t.`identity_card`,
+	t.`register_time`,
+	t.`pay_num`,
+	t.`serve_num`,
+	t.`balance`,
+	t.`restitution`,
+	t.`pay_time`,
+	t.`login_time`,
+	t.`add_time`,
+	t.`update_time`,
+	t.`delete_flag`,
+	tp.`address`,
+    tp.`relation`,
+    tp.`wuyefei`
+FROM
+	t_user t
+LEFT JOIN t_user_plot tp ON t.id = tp.user_id where t.id = #{value}
+	</select>
+	
+		<select id="getup" resultType="com.yinwang.owneruser.domain.OwnerUserDO">
+				SELECT
+	t.`id`,
+	t.`open_id`,
+	t.`nickname`,
+	t.`password`,
+	t.`phone`,
+	t.`heard_url`,
+	t.`name`,
+	t.`identity_card`,
+	t.`register_time`,
+	t.`pay_num`,
+	t.`serve_num`,
+	t.`balance`,
+	t.`restitution`,
+	t.`pay_time`,
+	t.`login_time`,
+	t.`add_time`,
+	t.`update_time`,
+	t.`delete_flag`,
+	tp.`address`,
+    tp.`relation`,
+    tp.`wuyefei`,
+    tp.`mianji`
+FROM
+	t_user t
+LEFT JOIN t_user_plot tp ON t.id = tp.user_id where t.id = #{id} and tp.address = #{address}
+	</select>
+	
+	<select id="list" resultType="com.yinwang.owneruser.domain.OwnerUserDO">
+		SELECT
+	t.`id`,
+	t.`open_id`,
+	t.`nickname`,
+	t.`password`,
+	t.`phone`,
+	t.`heard_url`,
+	t.`name`,
+	t.`identity_card`,
+	t.`register_time`,
+	t.`pay_num`,
+	t.`serve_num`,
+	t.`balance`,
+	t.`restitution`,
+	t.`pay_time`,
+	t.`login_time`,
+	t.`add_time`,
+	t.`update_time`,
+	t.`delete_flag`,
+	tp.`address`,
+    tp.`relation`,
+    tp.`wuyefei`,
+    tp.`mianji`
+FROM
+	t_user t
+LEFT JOIN t_user_plot tp ON t.id = tp.user_id
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="nickname != null and nickname != ''"> and nickname = #{nickname} </if>
+		  		  <if test="phone != null and phone != ''"> and phone = #{phone} </if>
+		  		  <if test="name != null and name != ''"> and name like concat('%',#{name},'%')</if>
+		  		  <if test="registerTime != null and registerTime != ''"> and register_time = #{registerTime} </if>
+		  		  <if test="serveNum != null and serveNum != ''"> and serve_num = #{serveNum} </if>
+		  		  <if test="balance != null and balance != ''"> and balance = #{balance} </if>
+		  		  <if test="restitution != null and restitution != ''"> and restitution = #{restitution} </if>
+		  		  <if test="payTime != null and payTime != ''"> and pay_time = #{payTime} </if>
+		  		  <if test="loginTime != null and loginTime != ''"> and login_time = #{loginTime} </if>
+		  		  <if test="addTime != null and addTime != ''"> and register_time &gt;= #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and register_time &lt;= #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_user
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="openId != null and openId != ''"> and open_id = #{openId} </if>
+		  		  <if test="nickname != null and nickname != ''"> and nickname = #{nickname} </if>
+		  		  <if test="password != null and password != ''"> and password = #{password} </if>
+		  		  <if test="phone != null and phone != ''"> and phone = #{phone} </if>
+		  		  <if test="heardUrl != null and heardUrl != ''"> and heard_url = #{heardUrl} </if>
+		  		  <if test="name != null and name != ''"> and name = #{name} </if>
+		  		  <if test="identityCard != null and identityCard != ''"> and identity_card = #{identityCard} </if>
+		  		  <if test="registerTime != null and registerTime != ''"> and register_time = #{registerTime} </if>
+		  		  <if test="payNum != null and payNum != ''"> and pay_num = #{payNum} </if>
+		  		  <if test="serveNum != null and serveNum != ''"> and serve_num = #{serveNum} </if>
+		  		  <if test="balance != null and balance != ''"> and balance = #{balance} </if>
+		  		  <if test="restitution != null and restitution != ''"> and restitution = #{restitution} </if>
+		  		  <if test="payTime != null and payTime != ''"> and pay_time = #{payTime} </if>
+		  		  <if test="loginTime != null and loginTime != ''"> and login_time = #{loginTime} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+	</select>
+	 
+	
+ 	<select id="exeList" resultType="java.util.Map">
+		<!-- 
+		SELECT
+			name,
+			nickname,
+			phone,
+			DATE_FORMAT(`register_time`,'%Y-%m-%d %h:%m:%s') as registerTime,
+			pay_num,
+			serve_num,
+			balance,
+			DATE_FORMAT(`pay_time`,'%Y-%m-%d %h:%m:%s') as payTime,
+			DATE_FORMAT(`login_time`,'%Y-%m-%d %h:%m:%s') as loginTime
+		FROM t_user
+		 -->
+		
+<!-- 		SELECT
+			IFNULL(name,'') as 用户姓名,
+			IFNULL(nickname,'') as 会员昵称,
+			IFNULL(phone,'') as 注册手机号,
+			IFNULL(DATE_FORMAT(`register_time`,'%Y-%m-%d %h:%m:%s'),'') as 注册时间,
+			IFNULL(pay_num,'') as 消费金额,
+			IFNULL(serve_num,'') as 服务次数,
+			IFNULL(balance,'') as 余额,
+			IFNULL(DATE_FORMAT(`pay_time`,'%Y-%m-%d %h:%m:%s'),'') as 缴费日期,
+			IFNULL(DATE_FORMAT(`login_time`,'%Y-%m-%d %h:%m:%s'),'') as 最后登录时间
+		FROM t_user -->
+		
+		SELECT
+   IFNULL(t.name,'') as 用户姓名,
+   IFNULL(t.nickname,'') as 会员昵称,
+   IFNULL(t.phone,'') as 注册手机号,
+   IFNULL(DATE_FORMAT(t.`register_time`,'%Y-%m-%d %h:%m:%s'),'') as 注册时间,
+   IFNULL(tp.`address`,'') as 地址,
+      IFNULL(tp.`relation`,'') as 身份,
+   IFNULL(tp.`wuyefei`,'') as 物业费,
+      IFNULL( tp.`mianji`,'') as 面积
+  FROM t_user t
+LEFT JOIN t_user_plot tp ON t.id = tp.user_id
+		
+		
+		<where>  
+			<if test="id != null and id != ''"> and t.id = #{id} </if>
+			<if test="nickname != null and nickname != ''"> and t.nickname = #{nickname} </if>
+			<if test="phone != null and phone != ''"> and t.phone = #{phone} </if>
+			<if test="name != null and name != ''"> and t.name like concat('%',#{name},'%')</if>
+			<if test="registerTime != null and registerTime != ''"> and t.register_time = #{registerTime} </if>
+			<if test="serveNum != null and serveNum != ''"> and t.serve_num = #{serveNum} </if>
+			<if test="balance != null and balance != ''"> and t.balance = #{balance} </if>
+			<if test="restitution != null and restitution != ''"> and t.restitution = #{restitution} </if>
+			<if test="payTime != null and payTime != ''"> and t.pay_time = #{payTime} </if>
+			<if test="loginTime != null and loginTime != ''"> and t.login_time = #{loginTime} </if>
+			<if test="addTime != null and addTime != ''"> and t.register_time &gt;= #{addTime} </if>
+			<if test="updateTime != null and updateTime != ''"> and t.register_time &lt;= #{updateTime} </if>
+			<if test="deleteFlag != null and deleteFlag != ''"> and t.delete_flag = #{deleteFlag} </if>
+			<if test="ids != null and ids != ''"> and t.id in (${ids}) </if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+			    order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by t.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<update id="update" parameterType="com.yinwang.owneruser.domain.OwnerUserDO">
+			update t_user_plot
+		<set>
+			<if test="wuyefei != null">`wuyefei` = #{wuyefei}, </if>
+			<if test="mianji != null">`mianji` = #{mianji}, </if>
+		</set>
+		where user_id = #{id} and  address = #{address}
+	</update>
+		<select id="get1" resultType="com.yinwang.owneruser.domain.OwnerUserDO">
+		select `id`,`open_id`,`nickname`,`password`,`phone`,`heard_url`,`name`,`identity_card`,`register_time`,`pay_num`,`serve_num`,`balance`,`restitution`,`pay_time`,`login_time`,`add_time`,`update_time`,`delete_flag` from t_user where id = #{value}
+	</select>
+	<update id="update1" parameterType="com.yinwang.owneruser.domain.OwnerUserDO">
+			update t_user
+		<set>
+			<if test="deleteFlag != null">`delete_flag` = #{deleteFlag}, </if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_user where id = #{value}
+	</delete>
+	
+
+</mapper>

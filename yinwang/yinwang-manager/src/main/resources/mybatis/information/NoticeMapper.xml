@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.NoticeDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.NoticeDO">
+		select `id`,`title`,`for_names`,`for_ids`,`details`,`for_num`,`num`,`add_time`,`update_time`,`dalete_flag` from t_notice where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.NoticeDO">
+		select `id`,`title`,`for_names`,`for_ids`,`details`,`for_num`,`num`,`add_time`,`update_time`,`dalete_flag` from t_notice
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="title != null and title != ''"> and title = #{title} </if>
+		  		  <if test="forNames != null and forNames != ''"> and for_names = #{forNames} </if>
+		  		  <if test="forIds != null and forIds != ''"> and for_ids = #{forIds} </if>
+		  		  <if test="details != null and details != ''"> and details = #{details} </if>
+		  		  <if test="forNum != null and forNum != ''"> and for_num = #{forNum} </if>
+		  		  <if test="num != null and num != ''"> and num = #{num} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="daleteFlag != null and daleteFlag != ''"> and dalete_flag = #{daleteFlag} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_notice
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="title != null and title != ''"> and title = #{title} </if>
+		  		  <if test="forNames != null and forNames != ''"> and for_names = #{forNames} </if>
+		  		  <if test="forIds != null and forIds != ''"> and for_ids = #{forIds} </if>
+		  		  <if test="details != null and details != ''"> and details = #{details} </if>
+		  		  <if test="forNum != null and forNum != ''"> and for_num = #{forNum} </if>
+		  		  <if test="num != null and num != ''"> and num = #{num} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="daleteFlag != null and daleteFlag != ''"> and dalete_flag = #{daleteFlag} </if>
+		  		</where>
+	</select>
+	
+	<select id="noticeId" resultType="int">
+		select nextval('notice_sql') from dual
+	</select>
+	
+	<insert id="save" parameterType="com.yinwang.information.domain.NoticeDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_notice
+		(
+			id,
+			`title`, 
+			`for_names`, 
+			`for_ids`, 
+			`details`, 
+			`for_num`, 
+			`num`, 
+			`add_time`, 
+			`update_time`, 
+			`dalete_flag`
+		)
+		values
+		(
+			#{id},
+			#{title}, 
+			#{forNames}, 
+			#{forIds}, 
+			#{details}, 
+			#{forNum}, 
+			#{num}, 
+			#{addTime}, 
+			#{updateTime}, 
+			#{daleteFlag}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.NoticeDO">
+		update t_notice 
+		<set>
+			<if test="title != null">`title` = #{title}, </if>
+			<if test="forNames != null">`for_names` = #{forNames}, </if>
+			<if test="forIds != null">`for_ids` = #{forIds}, </if>
+			<if test="details != null">`details` = #{details}, </if>
+			<if test="forNum != null">`for_num` = #{forNum}, </if>
+			<if test="num != null">`num` = #{num}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="daleteFlag != null">`dalete_flag` = #{daleteFlag}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_notice where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_notice where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

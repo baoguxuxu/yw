@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="shortcut icon" href="/img/logo_bank_gfyh.png" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/base.css" type="text/css">
+<title>订单详情</title>
+<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/jquery.SuperSlide.2.1.1.js"></script>
+<script type="text/javascript" src="/js/Font.js"></script>
+</head>
+<body>
+<div class="Top" ><span onclick="javascript:history.back(-1);"></span>报修详情</div>
+<div class="baoxiu font-32">报修业主</div>
+<div class="xq-top font-30">
+	<input type="hidden" id="id" th:value="${mapRepair.id}" >
+	<p><i>保修类别：</i><span th:text="${mapRepair.categoryName}"></span></p>
+	<p><i>维修类型：</i><span th:text="${mapRepair.typeName}"></span></p>
+	<p><i>发单时间：</i><span th:text="${mapRepair.addTime}"></span></p>
+	<p><i>维修时间：</i><span th:text="${mapRepair.repairTime}"></span></p>
+	<p><i>地<em></em>址：</i><span th:text="${mapRepair.address}"></span></p>
+	<p><i>备<em></em>注：</i></p>
+	<textarea readonly="readonly" name="" id="" cols="30" rows="10" placeholder="备注信息" th:text="${mapRepair.details}"></textarea>
+</div>
+
+<div class="picScroll">
+	<ul th:each="con:${listFile}">
+		<li><img th:src="${con.url}" alt=""/></li>
+	</ul>
+	<span class="qian"></span><span class="hou"></span>
+</div>
+
+<div class="baoxiu font-32 shifu">维修师傅</div>
+<dl class="wxsf font-36 bg-white">
+	<dt th:text="${user.nickname }">王武</dt>
+	<dd th:text="${user.phone }">152 0113 3876</dd>
+</dl>
+
+<div class="baoxiu font-32 baojia">报价</div>
+<div class="feiyong font-32">
+<!--    th:value="${mapRepair.replacement_item }"  th:value="${mapRepair.price_goods }"  th:text="${mapRepair.money }" -->
+	<p><span>维修费：</span><input type="text" id="service_charge" onchange="service_charge()" th:value="${mapRepair.service_charge }"/>元</p>
+	<p><span>更换项：</span><input type="text" id="replacement_item" th:value="${mapRepair.replacement_item }"/></img src="/img/xjia.png" alt=""/></p>
+	<p><span>物品价：</span><input type="text" id="price_goods" onchange="service_charge()" th:value="${mapRepair.price_goods }" />元</p>
+	<b>总价：<span id="money" th:text="${mapRepair.money }"></span>元</b>
+</div>
+<!-- 维修状态1:未接单；2：已接单；3：已报价，服务中；5：完成； -->
+	<label th:if="${mapRepair.repair_statue == 2}">
+		<div class="wanc font-36" onclick="baojia()">报价</div>
+	</label>
+	<label th:if="${mapRepair.repair_statue == 3}">
+		<div class="wanc font-36" onclick="repairStatue(5);">确认完成</div>
+	</label>
+	<label th:if="${mapRepair.repair_statue == 3 || mapRepair.repair_statue == 2 }">
+		<div class="wanc font-36 quxiao" onclick="repairStatue(1);">取消订单</div>
+	</label>
+	<div th:include="include :: footer"></div>
+</body>
+<script type="text/javascript">
+
+	function service_charge(){
+		var service_charge = $("#service_charge").val();
+		var price_goods = $("#price_goods").val();
+		var money = parseInt(service_charge)+parseInt(price_goods);
+		$("#money").html(money);
+	}
+	
+	function repairStatue(repairStatue){
+		var id = $("#id").val();
+		$.ajax({
+			type: "POST",
+			url: "/repair/repairStatue",
+			data: {"id":id,"repairStatue":repairStatue},
+			success: function (r) {
+				if (r.code == 0) {
+					var index = layer.load(1, {
+						shade: [0.1,'#fff'] //0.1透明度的白色背景
+					});
+					parent.location.href = '/index?repairStatue=0';
+				} else {
+					layer.msg(r.msg);
+				}
+			},
+		});
+	}
+	
+	function baojia(){
+		var id = $("#id").val();
+		var service_charge = $("#service_charge").val();
+		var replacement_item = $("#replacement_item").val();
+		var price_goods = $("#price_goods").val();
+		if(service_charge ==''){
+			layer.msg("请输入维修价格");
+			return;
+		}
+		$.ajax({
+			type: "POST",
+			url: "/repair/baojia",
+			data: {"id":id,"service_charge":service_charge,"replacement_item":replacement_item,"price_goods":price_goods},
+			success: function (r) {
+				if (r.code == 0) {
+					var index = layer.load(1, {
+						shade: [0.1,'#fff'] //0.1透明度的白色背景
+					});
+					parent.location.href = '/index?repairStatue=0';
+				} else {
+					layer.msg(r.msg);
+				}
+			},
+		});
+	}
+</script>
+</html>
+

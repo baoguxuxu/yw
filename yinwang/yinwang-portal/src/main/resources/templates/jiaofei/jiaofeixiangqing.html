@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="shortcut icon" href="/img/logo_bank_gfyh.png" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/base.css" type="text/css">
+<title>缴费详情</title>
+<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/Font.js"></script>
+<script src="/js/plugins/layer/layer.js"></script>
+</head>
+<body>
+	<div class="Top"><span onclick="javascript:history.back(-1);">&nbsp;</span>缴费</div>
+	<form lass="form-horizontal m-t" id="signupForm">
+	   <input type="hidden" th:value="${openid}" name="openid" id="openid"/>
+	   <input type="hidden" value="" name="payadress" id="payadress"/>
+		<div id="userAddress" class="add font-30">
+			<dl>
+				<dd>请选择地址</dd>
+				<dd><em></em><span></span></dd>
+			</dl>
+			<img class="kuo" onclick="getAddressList();" src="/img/arr-big.png" alt=""/>
+		</div>
+		<!-- <div class="add font-30">
+			<dl>
+				<dd>张先生 135****4567</dd>
+				<dd><em>房 客</em><span>西城区西直门南小街33号 1号楼 2单元 1006</span></dd>
+			</dl>
+		</div> -->
+	
+		<ul class="jfei-money">
+			<li><span id='benqifei'>0.00</span>本期</li>
+			<li><em>0.00</em>欠费</li>
+		</ul>
+		
+		<div class="daoqi font-26">
+<!-- 			<div class="Num">
+				<i class="less"></i>
+				<input type="text" value="1">
+				<i class="add"></i>
+			</div> -->
+			<p id="showt">起止时间：2018-03-13至2018-09-13</p>    
+		</div>
+		
+<!-- 		<div class="jine bg-white">
+			<input type="text" placeholder="请输入金额">
+			<p>￥10.00/月</p>
+		</div> -->
+		
+		<div class="next-money font-30">
+			<p>总计：<span id="zongjifei">0.00</span></p>
+			<p onclick="goPay();">确认缴费</p>
+		</div>
+	</form>
+	
+	<div id="listAddress" style="display: none;">
+	<!-- <div class="new-add fangwu font-28">
+		<span>新增地址</span><a href="#" onclick="creadAddress();"><img src="/img/arr-big.png" alt=""/></a>
+	</div> -->
+	<!-- 地址列表 -->
+	<!--房屋信息-->
+	<!-- <div class="fangwu-msg font-24 bg-white">
+		<h3 th:class="${plot.relation == '房东' ? 'c-blue' : 'c-green'}">房屋信息</h3>
+		<p><i th:text="${user.name}"></i> <i th:text="${user.identityCard}"></i> <span class="bg-blue" th:text="${plot.relation}"></span></p>
+		<p class="dizhi" th:text="${plot.address}"></p>
+	</div> -->
+</div>
+<div id="creatAddress" style="display: none;">
+<!-- 地址新增 -->
+	<div id="addplotid">
+		<form id="signupFormAdd">
+		<div class="fangwu-add">
+			<ul>
+				<li class="on" onclick="chossef()" id="fangzhu"></li>
+				<li class="qinshu" onclick="chosseq()" id="qinshu"></li>
+				<li class="zuhu" onclick="chossez()" id="zuhu"></li>
+			</ul>
+		</div>
+		<input type="hidden" value="房东" name="relation" id="relation"/>
+		<div class="fangwu-add-txt bg-white" id="fangzhudiv">
+			<ul>
+				<li><span>真实姓名</span><em><input type="text" maxlength="6"  th:value="${user.name}"
+						placeholder="请输入姓名" name="username" id="username"/></em></li>
+				<input type="hidden" th:value="${user.id}" name="userId" id="userId"/>
+				<input type="hidden" value="" name="plotId" id="plotId"/>
+				<li><span>证件类型</span><em>身份证</em></li>
+				<li><span>请输入证件号码</span><em><input type="text" th:value="${user1.identityCard}" 
+						maxlength="18" placeholder="请输入房主身份证号码" name="identityCard"  id="identityCard"/></em>
+				</li>
+				<li  onclick="chossed()" style="border-top: .14rem solid #f1f1f1;"><span>房屋地址</span><em
+					name="dizhid"><i></i></em></li>
+			</ul>
+		</div>
+		<div class="fangwu-add-txt bg-white" id="otherdiv"
+			style="display: none">
+			<ul>
+				<li><span>房主姓名</span><em><input type="text" maxlength="6"
+						placeholder="请输入房主姓名" name="fangdongname" id="fangdongname"/></em></li>
+				<li><span>证件类型</span><em>身份证</em></li>
+				<li><span>请输入证件号码</span><em><input type="text"
+						maxlength="18" placeholder="请输入房主身份证号码" name="fangdongid"  id="fangdongid"/></em></li>
+				<li><span>请输入手机号码</span><em><input type="text"
+						maxlength="11" placeholder="请输入房主手机号码" name="fangdongphone"  id="fangdongphone"/></em></li>
+				<li onclick="chossed()" style="border-top: .14rem solid #f1f1f1;"><span>房屋地址</span><em
+					name="dizhid"><i></i></em></li>
+			</ul>
+		</div>
+		<input type="hidden" value="" name="address" id="address"/>
+		<input class="tijiao font-32" type="button" id="saveplot" value="提交" onclick="submitplot()"/>
+		</form>
+	</div>
+	<div id="dingweiid" style="display: none">
+		<div class="Top">
+			<a href="/owner/addPlot"><span>&nbsp;</span></a>定位
+		</div>
+		
+		<div class="GPS">
+			<select id="cityId" name="cityId"
+					onchange="getplot()">
+						<div th:each="city:${cityList}">
+							<option th:value="${city}" th:text="${city}"></option>
+						</div>
+				</select> 
+				<select id="plotIds" name="plotIds">
+				<div th:each="plot:${plotList}">
+						<option th:value="${plot.id}" th:text="${plot.name}"></option>
+						</div>
+				</select>
+
+		</div>
+		<div class="shi">
+			<input type="text" placeholder="请输入楼号单元门牌号" id="addressd" />
+		</div>
+		<input class="tijiao font-32" type="submit" onclick="savedizhi();"
+			value="确定" />
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+//商品数量点击事件
+	var nubs=$(".Num").find("input").val();
+	$("i.add").click("tap",function(){
+		nubs++;
+		$(".Num").find("input").val(nubs);
+	});
+	$("i.less").click("tap",function(){
+		nubs--;
+		$(".Num").find("input").val(nubs);
+		if(nubs<=0){
+			$(".Num").find("input").val(1);
+			alert("最少兑一件！");
+		}
+	});
+	
+	$(function(){
+		/* $(".nav li").click(function(){
+			var li=$(this).text();
+			$("#typeId").val($(this).val());
+			$(".nav p").html(li);
+			$(".new").hide();
+	  
+		});
+		
+		laydate.render({
+			elem: '#repairTime',
+			type: 'datetime'
+		});
+		//报修类型
+		$(".nav p").click(function(){
+			var ul=$(".new");
+			if(ul.css("display")=="none"){
+				ul.slideDown();
+			}else{
+				ul.slideUp();
+			}
+		});
+		
+		//报修类别
+		$(".st_nav p").click(function(){
+			var ul=$(".st_new");
+			if(ul.css("display")=="none"){
+				ul.slideDown();
+			}else{
+				ul.slideUp();
+			}
+		});
+		
+		$(".st_nav li").click(function(){
+			var li=$(this).text();
+			$("#categoryId").val($(this).val());
+			$(".st_nav p").html(li);
+			$(".st_new").hide();
+		}); */
+		fangwu();
+		showTime();
+	})
+
+	var i = 1;
+	var num = 0;
+	function deleteLi(id){
+		$("#"+id).remove();
+		num--;
+	} 
+	function showTime(){
+
+	    var now=new Date();
+	    var year=now.getFullYear();
+	    var month=now.getMonth()+1; //js获取的月份是从0开始；
+	    var day=now.getDate();
+	    var year1=now.getFullYear();
+	    var month1=now.getMonth()+7; //js获取的月份是从0开始；
+	    if(month1>12){
+	    	year1 = year1+1;
+	    	month1= month1-12;
+	    }
+	    $("#showt").html("起止时间:"+year+"-"+month+"-"+day+"至"+year1+"-"+month1+"-"+day);
+	  }
+	function udpateFileUrl(obj,id){
+		if(num >= 5){
+			alert('最多可上传5张');
+			return false;
+		}
+		var fileURL = getObjectURL(obj.files[0]);
+		if(fileURL) {
+			i++;
+			var li = '<span id="addFile'+i+'">';
+			li+='<input type="file" style="display: none;" onchange="udpateFileUrl(this,\''+i+'\')" id="files'+i+'" name="listImg" accept="image/*" >';
+			li+='<label for="files'+i+'"><img style="height: 110px;" id="addFileImg'+i+'" src="/img/tousu-pic1.jpg" alt=""/>';
+			li+='<em onclick="deleteLi(\'addFile'+i+'\');"></em></label>';
+			li+='</span>';
+			$("#addFileImg"+id).attr("src", fileURL);
+			$("#addFile"+id).after(li) 
+			num++
+		}
+	}
+	
+	//建立一個可存取到該file的url
+	function getObjectURL(file) {
+		var url = null ; 
+		if (window.createObjectURL!=undefined) { // basic
+			url = window.createObjectURL(file) ;
+		} else if (window.URL!=undefined) { // mozilla(firefox)
+			url = window.URL.createObjectURL(file) ;
+		} else if (window.webkitURL!=undefined) { // webkit or chrome
+			url = window.webkitURL.createObjectURL(file) ;
+		}
+		return url;
+	}
+		
+	
+	function save() {
+		var repairTime = $('#repairTime').val();
+		if(repairTime == ''){
+			layer.msg("请选择维修时间")
+			return false;
+		}
+		
+		var formData = new FormData(document.getElementById("signupForm"));
+		$.ajax({
+			cache : true,
+			type : "POST",
+			url : "/information/repair/save",
+			data : formData,// 你的formid
+			processData:false,
+			contentType:false,
+			async : false,
+			error : function(request) {
+				layer.alert("Connection error");
+			},
+			success : function(data) {
+				if (data.code == 0) {
+					layer.alert("操作成功");
+					window.location.href='/index';
+				} else {
+					layer.alert(data.msg)
+				}
+			}
+		});
+	}
+	
+	
+	function userAddress1(id,mianji,wuyefei,name,idNum,addressName,address){
+		var html = '';
+		html += ' <dl> ';
+		html += ' <dd>' + name + idNum +'</dd> ';
+		html += ' <dd><em>' + addressName + '</em><span>' + address + '</span></dd> ';
+		html += ' </dl> ';
+		html += ' <img class="kuo" onclick="getAddressList();" src="/img/arr-big.png" alt=""/> ';
+		$("#addId").val(id);
+		$("#userAddress").html(html);
+		$("#signupForm").show();
+		$("#listAddress").hide();
+		$('#creatAddress').hide();
+		$('#payadress').val(address);
+		$.ajax({
+            type: "POST",
+            url: "/jiaofei/wuye/getpaytime",
+            data : {
+				'address' : address,
+			},
+            success: function (r) {
+                 if (r.code == 0) {
+             		$("#benqifei").html((wuyefei*mianji).toFixed(2));
+            		$("#zongjifei").html((wuyefei*mianji*6).toFixed(2));
+                } else {
+            		$("#benqifei").html("0.00");
+            		$("#zongjifei").html("0.00");
+                }
+            },
+        });
+	}
+	function userAddress(id,mianji,wuyefei,name,idNum,addressName,address){
+		var html = '';
+		html += ' <dl> ';
+		html += ' <dd>' + name + idNum +'</dd> ';
+		html += ' <dd><em>' + addressName + '</em><span>' + address + '</span></dd> ';
+		html += ' </dl> ';
+		html += ' <img class="kuo" onclick="getAddressList();" src="/img/arr-big.png" alt=""/> ';
+		$("#addId").val(id);
+		$("#userAddress").html(html);
+		$("#benqifei").html((wuyefei*mianji).toFixed(2));
+		$("#zongjifei").html((wuyefei*mianji*6).toFixed(2));
+		$('#payadress').val(address);
+		$.ajax({
+            type: "POST",
+            url: "/jiaofei/wuye/getpaytime",
+            data : {
+				'address' : address,
+			},
+            success: function (r) {
+            	 if (r.code == 0) {
+              		$("#benqifei").html((wuyefei*mianji).toFixed(2));
+             		$("#zongjifei").html((wuyefei*mianji*6).toFixed(2));
+                 } else {
+             		$("#benqifei").html("0.00");
+             		$("#zongjifei").html("0.00");
+                 }
+            },
+        });
+	}
+	
+	
+	/*   查询房屋列表    */
+	
+	function getAddressList(){
+		$("#signupForm").hide();
+		$("#listAddress").show();
+		$('#creatAddress').hide();
+		fangwu();
+	}
+	function fangwu(){
+		$.ajax({
+			cache : true,
+			type : "POST",
+			url : "/jiaofei/wuye/getAddressList",
+			data : {},// 你的formid
+			processData:false,
+			contentType:false,
+			async : false,
+			error : function(request) {
+				layer.alert("Connection error");
+			},
+			success : function(data) {
+				if (data.code == 0) {
+					var html = '';
+					/* html +=' <div class="new-add fangwu font-28"> ';
+					html +=' <span>新增地址</span><a href="#" ><img onclick="creadAddress();" src="/img/arr-big.png" alt=""/></a> ';
+					html +=' </div> '; */
+					var user = data.user;
+					$.each(data.pdoL,function(i,plot){
+						//i为元素的索引，从0开始,j为当前处理的元素对象
+						//con += $(j).attr('tag')+',';
+						if( i ==0){
+							userAddress(plot.id,plot.mianji,plot.wuyefei,user.name, user.identityCard,plot.relation,plot.address);
+						}
+						html +=' <div class="fangwu-msg font-24 bg-white" onclick="userAddress1(' + plot.id + ',\''+plot.mianji+ '\',\''+plot.wuyefei+ '\',\''+user.name + '\',\'' + user.identityCard + '\',\'' + plot.relation + '\',\'' + plot.address + '\');"> ';
+						if(plot.relation == '房东'){
+							html +=' <h3 th:class="c-blue">房屋信息</h3>';
+						}else{
+							html +=' <h3 th:class="c-green">房屋信息</h3>';
+						}
+						html +=' <p><i>' + user.name + '</i> <i>' + user.identityCard + '</i> <span class="bg-blue">' + plot.relation + '</span></p>';
+						html +=' <p class="dizhi">' + plot.address + '</p>';
+						html +=' </div>';
+					});
+					$("#listAddress").html(html);
+				} else {
+					layer.alert(data.msg)
+				}
+			}
+		});
+	}
+	
+/*   新增房屋方法       */
+	
+	function creadAddress(){
+		$("#listAddress").hide();
+		$("#creatAddress").show();
+		$("#signupForm").hide();
+	}
+	
+	
+	function chossef() {
+		$('#fangzhu').addClass('on');
+		$('#qinshu').removeClass('on');
+		$('#zuhu').removeClass('on');
+		$('#fangzhudiv').show();
+		$('#otherdiv').hide();
+		$('#relation').val("房主");
+	}
+	function chosseq() {
+		$('#qinshu').addClass('on');
+		$('#fangzhu').removeClass('on');
+		$('#zuhu').removeClass('on');
+		$('#fangzhudiv').hide();
+		$('#otherdiv').show();
+		$('#relation').val("亲属");
+	}
+	function chossez() {
+		$('#zuhu').addClass('on');
+		$('#fangzhu').removeClass('on');
+		$('#qinshu').removeClass('on');
+		$('#fangzhudiv').hide();
+		$('#otherdiv').show();
+		$('#relation').val("租户");
+	}
+	function chossed() {
+		$('#addplotid').hide();
+		$('#dingweiid').show();
+	}
+
+	function getplot() {
+		var city = $("#cityId").val();
+
+		$.ajax({
+			url : '/owner/getplot',
+			data : {
+				'city' : city
+			},
+			type : "POST",
+			dataType : this.dataType,
+			async : this.async,
+			success : function(data) {
+				if (data.code == 0) {
+					var temp_html = "";
+					$.each(data.plotList, function(i, plot) {
+						temp_html += "<option value='"+plot.id+"'>" + plot.name
+								+ "</option>";
+					});
+					$("#plotIds").html(temp_html);
+				} else {
+					layer.msg(data.msg)
+				}
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("error: " + errorThrown);
+			}
+		});
+
+	}
+	function savedizhi() {
+		var cityd = $("#cityId").val();
+		var plotd = $("#plotIds").val();
+		var plotdtxt = $("#plotIds").find("option:selected").text();
+		var addressd = $("#addressd").val();
+		if (addressd == null | addressd == "") {
+			layer.msg("请输入详细地址");
+			return;
+		}
+	 	$('#addplotid').show();
+		$('#dingweiid').hide();
+		$('em[name="dizhid"]').html($.trim(cityd) + $.trim(plotdtxt) + $.trim(addressd));
+		$('#plotId').val(plotd);
+		$('#address').val($.trim(cityd) + $.trim(plotdtxt) + $.trim(addressd)); 
+
+	}
+	
+    function submitplot() {
+    	var phonePattern = /^1\d{10}$/; //手机号 /^1[3|5|7|8]\d{9}$/
+    	if($('#qinshu').hasClass('on')||$('#zuhu').hasClass('on')){
+        	if( $('#fangdongname').val()==null || $('#fangdongname').val()=="" ){
+        		layer.msg("请输入房东姓名"); return;
+        	}
+        	if( $('#fangdongid').val()==null || $('#fangdongid').val()=="" ){
+        		layer.msg("请输入房东身份证号"); return;
+        	}
+        	if( $('#fangdongphone').val()==null || $('#fangdongphone').val()=="" ){
+        		layer.msg("请输入房东手机号"); return;
+        	}
+    		if(phonePattern.test($('#fangdongphone').val())==false){
+    			layer.msg("请输入正确手机号");
+    			return false;
+    		}
+    		if(!isCardNo($.trim($('#fangdongid').val()))){
+    			layer.msg('身份证号不正确');
+    			return;
+    		}
+    	}else{
+        	if( $('#username').val()==null || $('#username').val()=="" ){
+        		layer.msg("请输入姓名"); return;
+        	}
+        	if( $('#identityCard').val()==null || $('#identityCard').val()=="" ){
+        		layer.msg("请输入身份证号"); return;
+        	}
+ 		   if(!isCardNo($.trim($('#identityCard').val()))){
+ 			  layer.msg('身份证号不正确');
+ 			  return;
+ 		    }
+    	}
+    	if( $('#address').val()==null || $('#address').val()==""){
+    		layer.msg("请选择房屋地址"); return;
+    	}
+    	$.ajax({
+			url : '/owner/saveplotQ',
+		 	data: $('#signupFormAdd').serialize(), 
+			type : "POST",
+			dataType : this.dataType,
+			async : this.async,
+			success : function(data) {
+				if (data.code == 0) {
+					layer.msg("保存成功");
+					getAddressList();
+				} else {
+					layer.msg(data.msg)
+				}
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("error: " + errorThrown);
+			}
+		});
+    }
+    //验证身份证 
+    function isCardNo(card) { 
+    	var pattern = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/; 
+    	return pattern.test(card); 
+    }
+    
+    function goPay(){
+    	   if($("#zongjifei").html()==0){
+    		   layer.msg('本期不需要缴费');
+  			   return;
+    	   }
+    		$.ajax({
+    			type: "POST",
+    			url: "/jiaofei/wuye/wxpay/payment",
+    			data: {
+    				desc: "物业费",
+    				attach: $('#payadress').val(),
+    				totalFee: 1,
+    				repids:0,
+    				openid: $('#openid').val(),
+    				spbill_create_ip: '121.69.133.202'
+    			},
+    			success: function(data){
+    				if(data.code == 0){
+                        function onBridgeReady(){
+                            WeixinJSBridge.invoke(
+                                'getBrandWCPayRequest', {
+                                    "appId": data.appId, //公众号名称，由商户传入
+                                    "timeStamp": data.timeStamp, //戳，自1970 年以来的秒数
+                                    "nonceStr": data.nonceStr, //随机串
+                                    "package": data.package,
+                                    "signType": data.signType, //微信签名方式:
+                                    "paySign": data.paySign  //微信签名,
+                                }, function (res) {
+                                    if (res.err_msg == "get_brand_wcpay_request:ok") {
+                                        // 此处可以使用此方式判断前端返回,微信团队郑重提示：res.err_msg 将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                                        layer.msg('支付成功');
+                                        location.href = "https://yinwang.wx.hg.jergavin.com";
+                                    }
+                                }
+                            )  
+                        }
+
+                        if (typeof WeixinJSBridge == "undefined"){
+                            if( document.addEventListener ){
+                                document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+                            }else if (document.attachEvent){
+                                document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
+                                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+                            }
+                         }else{
+                            onBridgeReady();
+                         }
+    				}else{
+    					alert(r.errmsg);
+    				}
+    			}
+    		});
+    	
+    }
+</script>

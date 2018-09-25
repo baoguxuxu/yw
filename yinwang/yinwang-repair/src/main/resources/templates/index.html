@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="shortcut icon" href="/img/logo_bank_gfyh.png" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/base.css" type="text/css">
+<title>订单列表</title>
+<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/Font.js"></script>
+</head>
+<body>
+<div class="Top">订单列表</div>
+<div class="new-list font-30">
+	<ul>
+		<li th:class="${repairStatue == 0 ? 'on' : ''}"><a href="/index?repairStatue=0">维修列表</a></li>
+		<li th:class="${repairStatue == 2 ? 'on' : ''}"><a href="/index?repairStatue=2">已接</a></li>
+		<li th:class="${repairStatue == 3 ? 'on' : ''}"><a href="/index?repairStatue=3">服务中</a></li>
+		<li th:class="${repairStatue == 5 ? 'on' : ''}"><a href="/index?repairStatue=5">已完成</a></li>
+	</ul>  
+</div>
+<div style="margin-bottom:1.1rem;">
+	<div class="new-list-txt bg-white" th:each="con:${listMap}">
+		<img th:src="${con.heardUrl}" alt=""/>
+		<div class="txt"  th:value="${con.id}" onclick="descs(this);">
+			<h3 th:text="${con.nickname}">小王子</h3>
+			<span th:text="${con.categoryName + con.typeName}">更换小龙头</span>
+			<p><span th:text="${con.repairTime}"></span><i th:text="${con.address}">山水文化园5号楼1单元101</i></p>
+		</div>
+		<!-- 维修状态1:未接单；2：已接单；3：已报价，服务中；5：完成； -->
+		<label th:if="${con.repair_statue == 1}">
+			<div class="new-btn font-30">
+				<p class="bg-blue queren" th:value="${con.id}" onclick="repairStatue(this)" >确认接单</p>
+				<p class="bg-green call"><a style="color: #FFFFFF;"  th:href="${'tel:' + con.phone}" >打电话</a></p>
+			</div>
+		</label>
+		<label th:if="${con.repair_statue == 2}">
+			<div class="new-btn font-30">
+				<p class="bg-zi yibaojia" th:value="${con.id}" onclick="descs(this);">报价</p>
+				<p class="bg-yellow queren">已接订单</p>
+				<p class="bg-green call"><a style="color: #FFFFFF;"  th:href="${'tel:' + con.phone}" >打电话</a></p>
+			</div>
+		</label>
+		<label th:if="${con.repair_statue == 3}">
+			<div class="new-btn font-30">
+				<p class="bg-blue queren">服务中</p>
+				<p class="bg-green call"><a style="color: #FFFFFF;"  th:href="${'tel:' + con.phone}" >打电话</a></p>
+			</div>
+		</label>
+		<label th:if="${con.repair_statue == 5}">
+			<div class="new-btn font-30">
+				<p class="bg-red queren">完成</p>
+				<p class="bg-green call"><a style="color: #FFFFFF;"  th:href="${'tel:' + con.phone}" >打电话</a></p>
+			</div>
+		</label>
+	</div>
+	<!-- 
+	<div class="new-list-txt bg-white">
+		<img src="/img/touxiang.png" alt=""/>
+	    <div class="txt">
+	    	<h3>小王子</h3>
+	        <span>更换小龙头</span>
+	        <p>2018-05-24<em>23：23 </em><i>山水文化园5号楼1单元101</i></p>
+	    </div>
+	    <div class="new-btn font-30">
+	       <p class="bg-zi yibaojia">已报价</p>
+			<p class="bg-yellow queren">已接订单</p>
+	       <p class="bg-green call">打电话</p>
+	    </div>   
+	</div>
+	
+	<div class="new-list-txt bg-white">
+		<img src="/img/touxiang.png" alt=""/>
+	    <div class="txt">
+	    	<h3>小王子</h3>
+	        <span>更换小龙头</span>
+	        <p>2018-05-24<em>23：23 </em><i>山水文化园5号楼1单元101</i></p>
+	    </div>
+	    <div class="new-btn font-30">
+			<p class="bg-blue queren">服务中</p>
+	       <p class="bg-green call">打电话</p>
+	    </div>   
+	</div>
+	
+	<div class="new-list-txt bg-white">
+		<img src="/img/touxiang.png" alt=""/>
+	    <div class="txt">
+	    	<h3>小王子</h3>
+	        <span>更换小龙头</span>
+	        <p>2018-05-24<em>23：23 </em><i>山水文化园5号楼1单元101</i></p>
+	    </div>
+	    <div class="new-btn font-30">
+			<p class="bg-red queren">完成</p>
+	       <p class="bg-green call">打电话</p>
+	    </div>   
+	</div>
+	 -->
+</div>
+
+<ul class="xiu-bot font-30 bg-white">
+	<li class="on">订单</li>
+	<li><a href="/myindex">我的</a></li>
+</ul>
+<div th:include="include :: footer"></div>
+<script type="text/javascript">
+	function repairStatue(_this){
+		var id = $(_this).attr("value");
+		$.ajax({
+			type: "POST",
+			url: "/repair/repairStatue",
+			data: {"id":id,"repairStatue":2},
+			success: function (r) {
+				if (r.code == 0) {
+					var index = layer.load(1, {
+						shade: [0.1,'#fff'] //0.1透明度的白色背景
+					});
+					parent.location.href = '/index?repairStatue=0';
+				} else {
+					layer.msg(r.msg);
+				}
+			},
+		});
+	}
+	
+	function descs(_this){
+		var id = $(_this).attr("value");
+		parent.location.href = '/queryRepair?id='+id;
+	}
+</script>
+</body>
+</html>
+

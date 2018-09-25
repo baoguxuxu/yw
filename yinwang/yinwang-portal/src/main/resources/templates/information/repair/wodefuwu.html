@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="shortcut icon" href="/img/logo_bank_gfyh.png" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/base.css" type="text/css">
+<title>我的服务</title>
+<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/Font.js"></script>
+<script type="text/javascript">
+	document.addEventListener("plusready", function() { 
+		// 注册返回按键事件 
+		plus.key.addEventListener('backbutton', function() { 
+			// 事件处理 
+			window.location.href='/owner/user';
+		}, false); 
+	});
+ 	
+</script>
+</head>
+<body>
+<div class="Top"><a href="/owner/user"><span></span></a>我的服务</div>
+<div class="my-fuwu">
+ <input type="hidden" th:value="${openid}" name="openid" id="openid"/>
+	<div class="my-fuwu-top bg-white font-24">
+		<ul>
+			<li th:class="${statue == '' || statue == null ? 'on' : ''}"><a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxa2ee172ca5977381&redirect_uri=https%3a%2f%2fyinwang.wx.hg.jergavin.com%2finformation%2frepair%2flistMap&response_type=code&scope=snsapi_base&state=STATE&connect_redirect=1#wechat_redirect">全部</a></li>
+			<li th:class="${statue == '0' ? 'on' : ''}"><a href="/information/repair/listMap?statue=0">待服务</a></li>
+			<li th:class="${statue == '1' ? 'on' : ''}"><a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxa2ee172ca5977381&redirect_uri=https%3a%2f%2fyinwang.wx.hg.jergavin.com%2finformation%2frepair%2flistMap%3fstatue%3d1&response_type=code&scope=snsapi_base&state=STATE&connect_redirect=1#wechat_redirect">待支付</a></li>
+			<li th:class="${statue == '2' ? 'on' : ''}"><a href="/information/repair/listMap?statue=2">待完成</a></li>
+			<li th:class="${statue == '3' ? 'on' : ''}"><a href="/information/repair/listMap?statue=3">已完成</a></li>
+		</ul>
+	</div>
+	<div class="my-fuwu-con font-24">
+	<!-- 
+		#foreach($re in $listMap)
+			#if($re.statue == 0)
+				待服务
+				<div class="txt bg-white">
+					<h3 class="blue">${re.categoryName}-${re.typeName}</h3>
+					<p>${re.address}</p>
+					<p class="p-time"><span class="fl">${re.addTime}</span></p>
+					<em class="blue">待服务</em>
+				</div>
+			#end
+		#end -->
+		<label th:each="re:${listMap}" class="checkbox-inline">
+			<!-- 待服务 -->
+			<label th:if="${re.statue == 0}" class="checkbox-inline">
+				<div class="txt bg-white">
+					<h3 class="blue" th:text="${re.categoryName + '-' + re.typeName}"></h3>
+					<p th:text="${re.address}"></p>
+					<p class="p-time"><span class="fl" th:text="${re.addTime}"></span></p>
+					<em class="blue">待服务</em>
+				</div>		
+			</label>
+			<!-- 待支付 -->
+			<label th:if="${re.statue == 1}" class="checkbox-inline">
+				<div class="txt bg-white">
+					<h3 th:text="${re.categoryName + '-' + re.typeName}"></h3>
+					<p th:text="${re.address}"></p>
+					<p class="p-time"><span class="fl" th:text="${re.addTime}"></span><span class="fr c-ora" ><span th:text="${'¥ ' + re.money }" ></span><i style="position: relative;"><b style="position: absolute;left: 0;top: 0;width: .87rem;height: .43rem;background: rgba(0,0,0,0);color: rgba(0,0,0,0);" th:text="${re.id+',' + re.money }" onclick="goPay(this);"></b>支付</i></span></p>
+					<em>待支付</em>
+				</div>		
+			</label>
+			<!-- 待评价 -->
+			<label th:if="${re.statue == 2}" class="checkbox-inline">
+				<div class="txt bg-white">
+					<h3 th:text="${re.categoryName + '-' + re.typeName}"></h3>
+					<p th:text="${re.address}"></p>
+					<p class="p-time"><span class="fl" th:text="${re.addTime}"></span><span class="fr c-ora" ><span th:text="${'¥ ' + re.money }"></span></span></p>
+					<em class="pjia">待完成</em>
+				</div>		
+			</label> 
+			<!-- 已完成 -->
+			<label th:if="${re.statue == 3}" class="checkbox-inline">
+				<div class="txt bg-white">
+					<h3 class="green" th:text="${re.categoryName + '-' + re.typeName}"></h3>
+					<p th:text="${re.address}"></p>
+					<p class="p-time"><span class="fl" th:text="${re.addTime}"></span><span class="fr c-ora" th:text="${'¥ ' + re.money}"></span></p>
+					<em class="finish">已完成</em>
+				</div>		
+			</label>
+		</label>
+		<!-- 
+		
+		待服务
+		<div class="txt bg-white">
+			<h3 class="blue">电器类型-电器修理</h3>
+			<p>北京市朝阳区建华路  153号  123室</p>
+			<p class="p-time"><span class="fl">2018-02-20  12：06</span></p>
+			<em class="blue">待服务</em>
+		</div>
+		待支付
+		<div class="txt bg-white">
+			<h3>电器类型-电器修理</h3>
+			<p>北京市朝阳区建华路  153号  123室</p>
+			<p class="p-time"><span class="fl">2018-02-20  12：06</span><span class="fr c-ora">¥ 20.00 <i>支付</i></span></p>
+			<em>待支付</em>
+		</div>
+		待评价
+		<div class="txt bg-white">
+			<h3>电器类型-电器修理</h3>
+			<p>北京市朝阳区建华路  153号  123室</p>
+			<p class="p-time"><span class="fl">2018-02-20  12：06</span><span class="fr c-ora">¥ 20.00 <i>评价</i></span></p>
+			<em class="pjia">待评价</em>
+		</div>
+		已完成
+		<div class="txt bg-white">
+			<h3 class="green">电器类型-电器修理</h3>
+			<p>北京市朝阳区建华路  153号  123室</p>
+			<p class="p-time"><span class="fl">2018-02-20  12：06</span><span class="fr c-ora">¥ 20.00</span></p>
+			<em class="finish">已完成</em>
+		</div>
+		
+		 -->
+	</div>
+</div>
+
+</body>
+</html>
+<script type="text/javascript">
+	 function goPay(_this){
+		 var paymoney = _this.innerHTML;
+		 var arepids = paymoney.split(",")[0];
+		 var paymoney1 = paymoney.split(",")[1];
+		 if(paymoney1=='0.00'){
+  		   alert('不需要缴费');
+			   return;
+  	   }
+ 		$.ajax({
+ 			type: "POST",
+ 			url: "/jiaofei/wuye/wxpay/payment",
+ 			data: {
+ 				desc: "维修费",
+ 				attach: '',
+ 				repids:arepids,
+ 				totalFee: parseInt(paymoney1*100),
+ 				openid: $('#openid').val(),
+ 				spbill_create_ip: '121.69.133.202'
+ 			},
+ 			success: function(data){
+ 				if(data.code == 0){
+                     function onBridgeReady(){
+                         WeixinJSBridge.invoke(
+                             'getBrandWCPayRequest', {
+                                 "appId": data.appId, //公众号名称，由商户传入
+                                 "timeStamp": data.timeStamp, //戳，自1970 年以来的秒数
+                                 "nonceStr": data.nonceStr, //随机串
+                                 "package": data.package,
+                                 "signType": data.signType, //微信签名方式:
+                                 "paySign": data.paySign  //微信签名,
+                             }, function (res) {
+                                 if (res.err_msg == "get_brand_wcpay_request:ok") {
+                                     // 此处可以使用此方式判断前端返回,微信团队郑重提示：res.err_msg 将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                                     location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxa2ee172ca5977381&redirect_uri=https%3a%2f%2fyinwang.wx.hg.jergavin.com%2finformation%2frepair%2flistMap&response_type=code&scope=snsapi_base&state=STATE&connect_redirect=1#wechat_redirect";
+                                 }
+                             }
+                         )  
+                     }
+
+                     if (typeof WeixinJSBridge == "undefined"){
+                         if( document.addEventListener ){
+                             document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+                         }else if (document.attachEvent){
+                             document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
+                             document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+                         }
+                      }else{
+                         onBridgeReady();
+                      }
+ 				}else{
+ 					alert(data.errmsg);
+ 				}
+ 			}
+ 		});
+ 	
+ }
+</script>

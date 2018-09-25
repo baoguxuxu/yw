@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="shortcut icon" href="/img/logo_bank_gfyh.png" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/base.css" type="text/css">
+<title>我的</title>
+<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/Font.js"></script>
+</head>
+<body>
+<div class="zxin font-30">
+	<div class="zx-top zx-xiu">
+		<div class="Top" style="background:none; line-height:1rem;margin-bottom:.2rem">个人中心</div>
+		<img src="/img/touxiang.png" alt=""/>
+		<p><span th:text="${user.nickname}">王小丫</span><i><a href="/logout">退出</a></i></p>
+		<p th:text="${user.phone }">15210357896</p> 
+	</div>
+	<ul class="xiu-mx bg-white">
+		<li><span class="fl">订单总数</span><span class="fr" th:text="${userMap.num+'单'}">1000单</span></li>
+		<li><span class="fl">总金额</span><span class="fr" th:text="${userMap.money+'元'}">1000元</span></li>
+	</ul>
+	<ul class="xiu-bot bg-white">
+		<li><a href="/index?repairStatue=0">订单</a></li>
+		<li class="on">我的</li>
+	</ul>
+</div>
+</body>
+</html>
+

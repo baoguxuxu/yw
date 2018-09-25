@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.MsgUserDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.MsgUserDO">
+		select `id`,`user_id`,`msg_id`,`statue`,`add_time`,`update_time` from t_msg_user where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.MsgUserDO">
+		select `id`,`user_id`,`msg_id`,`statue`,`add_time`,`update_time` from t_msg_user
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="msgId != null and msgId != ''"> and msg_id = #{msgId} </if>
+		  		  <if test="statue != null and statue != ''"> and statue = #{statue} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_msg_user
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="msgId != null and msgId != ''"> and msg_id = #{msgId} </if>
+		  		  <if test="statue != null and statue != ''"> and statue = #{statue} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.yinwang.information.domain.MsgUserDO">
+		insert into t_msg_user
+		(
+			`user_id`, 
+			`msg_id`, 
+			`statue`, 
+			`add_time`, 
+			`update_time`
+		)
+		values
+		(
+			#{userId}, 
+			#{msgId}, 
+			#{statue}, 
+			#{addTime}, 
+			#{updateTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.MsgUserDO">
+		update t_msg_user 
+		<set>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="msgId != null">`msg_id` = #{msgId}, </if>
+			<if test="statue != null">`statue` = #{statue}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}</if>
+		</set>
+		where id = #{id}
+	</update>
+	<delete id="remove">
+		delete from t_msg_user where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_msg_user where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

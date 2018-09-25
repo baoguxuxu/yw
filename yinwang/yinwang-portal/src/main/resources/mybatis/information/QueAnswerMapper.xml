@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.QueAnswerDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.QueAnswerDO">
+		select `id`,`user_id`,`topic_id`,`option_id`,`content`,`add_time` from t_que_answer where id = #{value}
+	</select>
+	<select id="getQueAnswer" resultType="com.yinwang.information.domain.QueAnswerDO">
+		select `id`,`user_id`,`topic_id`,`option_id`,`content`,`add_time` 
+		from t_que_answer 
+		where user_id = #{user_id} and topic_id = #{topic_id}
+	</select>
+	<select id="getQueAnswerList" resultType="com.yinwang.information.domain.QueAnswerDO">
+		select 
+		top.id,
+			top.topic_id,
+			tqa.option_id,
+			top.name,
+			CASE 
+				WHEN top.id = tqa.option_id THEN '1'
+				ELSE '2'
+			end as checked
+		from t_option top
+		LEFT JOIN (select * from t_que_answer where user_id = #{user_id} ) tqa ON top.id = tqa.option_id 
+		where top.topic_id = #{topic_id}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.QueAnswerDO">
+		select `id`,`user_id`,`topic_id`,`option_id`,`content`,`add_time` from t_que_answer
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="topicId != null and topicId != ''"> and topic_id = #{topicId} </if>
+		  		  <if test="optionId != null and optionId != ''"> and option_id = #{optionId} </if>
+		  		  <if test="content != null and content != ''"> and content = #{content} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_que_answer
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="topicId != null and topicId != ''"> and topic_id = #{topicId} </if>
+		  		  <if test="optionId != null and optionId != ''"> and option_id = #{optionId} </if>
+		  		  <if test="content != null and content != ''"> and content = #{content} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.yinwang.information.domain.QueAnswerDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_que_answer
+		(
+			`user_id`, 
+			`topic_id`, 
+			`option_id`, 
+			`content`, 
+			`add_time`
+		)
+		values
+		(
+			#{userId}, 
+			#{topicId}, 
+			#{optionId}, 
+			#{content}, 
+			#{addTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.QueAnswerDO">
+		update t_que_answer 
+		<set>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="topicId != null">`topic_id` = #{topicId}, </if>
+			<if test="optionId != null">`option_id` = #{optionId}, </if>
+			<if test="content != null">`content` = #{content}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_que_answer where id = #{value}
+	</delete>
+	
+	<delete id="removeTop">
+		delete from t_que_answer where user_id = #{user_id} and topic_id = #{topic_id}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_que_answer where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

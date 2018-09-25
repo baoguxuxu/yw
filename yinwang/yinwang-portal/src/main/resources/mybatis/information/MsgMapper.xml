@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.MsgDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.MsgDO">
+		select 
+		`id`,`name`,`type`,`for_names`,`for_ids`,`for_type`,`for_details`,
+		`add_time`,date_format(add_time, '%Y-%m-%d %H:%i:%s') as addTime1,`update_time`,`delete_flag` 
+		from t_msg where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.MsgDO">
+		select `id`,`name`,`type`,`for_names`,`for_ids`,`for_type`,`for_details`,`add_time`,`update_time`,`delete_flag` from t_msg
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="name != null and name != ''"> and name = #{name} </if>
+		  		  <if test="type != null and type != ''"> and type = #{type} </if>
+		  		  <if test="forNames != null and forNames != ''"> and for_names = #{forNames} </if>
+		  		  <if test="forIds != null and forIds != ''"> and for_ids = #{forIds} </if>
+		  		  <if test="forType != null and forType != ''"> and for_type = #{forType} </if>
+		  		  <if test="forDetails != null and forDetails != ''"> and for_details = #{forDetails} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="queryUserMsgList" resultType="java.util.Map">
+		select 
+			tm.id,
+			tmu.id as muId,
+			tm.`name`,
+			date_format(tmu.add_time, '%Y-%m-%d %H:%i:%s') as addTime,
+			tmu.statue
+		from t_msg tm,t_msg_user tmu
+		where tm.id = tmu.msg_id
+		and tmu.user_id = #{value}
+		ORDER BY tmu.statue,tmu.add_time DESC
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_msg
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="name != null and name != ''"> and name = #{name} </if>
+		  		  <if test="type != null and type != ''"> and type = #{type} </if>
+		  		  <if test="forNames != null and forNames != ''"> and for_names = #{forNames} </if>
+		  		  <if test="forIds != null and forIds != ''"> and for_ids = #{forIds} </if>
+		  		  <if test="forType != null and forType != ''"> and for_type = #{forType} </if>
+		  		  <if test="forDetails != null and forDetails != ''"> and for_details = #{forDetails} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+	</select>
+	 <select id="msgId" resultType="int">
+		select nextval('msg_sql') from dual
+	</select>
+	<insert id="save" parameterType="com.yinwang.information.domain.MsgDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_msg
+		(
+			id,
+			`name`, 
+			`type`, 
+			`for_names`, 
+			`for_ids`, 
+			`for_type`, 
+			`for_details`, 
+			`add_time`, 
+			`update_time`, 
+			`delete_flag`
+		)
+		values
+		(
+			#{id},
+			#{name}, 
+			#{type}, 
+			#{forNames}, 
+			#{forIds}, 
+			#{forType}, 
+			#{forDetails}, 
+			#{addTime}, 
+			#{updateTime}, 
+			#{deleteFlag}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.MsgDO">
+		update t_msg 
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="forNames != null">`for_names` = #{forNames}, </if>
+			<if test="forIds != null">`for_ids` = #{forIds}, </if>
+			<if test="forType != null">`for_type` = #{forType}, </if>
+			<if test="forDetails != null">`for_details` = #{forDetails}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="deleteFlag != null">`delete_flag` = #{deleteFlag}</if>
+		</set>
+		where id = #{id}
+	</update>
+	<update id="updateUserMsg" parameterType="com.yinwang.information.domain.MsgDO">
+		update t_msg_user  set statue = 1 where id = #{value}
+	</update>
+	
+	<delete id="remove">
+		delete from t_msg where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_msg where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

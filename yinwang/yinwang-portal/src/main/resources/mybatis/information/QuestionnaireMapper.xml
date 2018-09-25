@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.QuestionnaireDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.QuestionnaireDO">
+		select `id`,`title`,`details`,`for_names`,`for_ids`,`number`,`participant`,
+		`start_time`,`end_time`,
+		date_format(start_time, '%Y-%m-%d %H:%i:%s') AS startTime1,
+		date_format(end_time, '%Y-%m-%d %H:%i:%s') AS endTime1,
+		`is_show`,`add_time`,`update_time`,`delete_flag` 
+		from t_questionnaire where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.QuestionnaireDO">
+		select 
+			DISTINCT
+			tq.id,
+			tq.title,
+			tq.`details`,
+			tq.`for_names`,
+			tq.`for_ids`,
+			tq.`number`,
+			tq.`participant`,
+			tq.`start_time`,
+			tq.`end_time`,
+			tq.`start_time` AS startTime1,
+			tq.`end_time` AS endTime1,
+			tq.`is_show`,
+			tq.`add_time`,
+			tq.`update_time`,
+			tq.`delete_flag`
+		from t_questionnaire tq,t_questionnaire_plot tqp,t_user_plot tup
+		where tq.id = tqp.questionnaire_id and tqp.plot_id = tup.plot_id and tup.user_id = #{user_id}
+		and tq.is_show = 0 and tq.start_time  &lt;= NOW() and tq.end_time &gt;= NOW()
+		and tq.id not in (select questionnaire_id from t_que_complete where user_id = #{user_id})
+		order by tq.id desc 
+	</select>
+	<select id="myQuestionnaire" resultType="java.util.Map">
+		select 
+			tq.id,
+			tq.title,
+			date_format(tqc.add_time, '%Y-%m-%d %H:%i:%s') as addTime
+		from t_questionnaire tq,t_que_complete tqc
+		where tq.id = tqc.questionnaire_id
+		and tqc.user_id = #{user_id}
+		order by tq.id desc 
+	</select>
+	
+</mapper>

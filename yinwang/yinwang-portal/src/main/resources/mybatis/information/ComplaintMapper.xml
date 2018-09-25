@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.ComplaintDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.ComplaintDO">
+		select `id`,`type`,`title`,`content`,`plot_id`,`user_id`,`statue` from t_complaint where id = #{value}
+	</select>
+
+	<select id="list" resultType="java.util.Map">
+		SELECT 
+			tc.id,tc.type,tc.title,tc.content,
+			tp.phone as propertyPhone,concat(tp.province,tp.city,tp.detailed_address) as propertyAddress ,
+			tu.name,tu.phone
+		FROM `t_complaint` tc,t_plot tp,t_user tu
+		<where>
+			tc.plot_id = tp.id and tc.user_id = tu.id
+			<if test="id != null and id != ''"> and id = #{id} </if>
+			<if test="type != null and type != ''"> and type = #{type} </if>
+			<if test="title != null and title != ''"> and title = #{title} </if>
+			<if test="content != null and content != ''"> and content = #{content} </if>
+			<if test="plotId != null and plotId != ''"> and plot_id = #{plotId} </if>
+			<if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+			<if test="statue != null and statue != ''"> and statue = #{statue} </if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_complaint
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="type != null and type != ''"> and type = #{type} </if>
+		  		  <if test="title != null and title != ''"> and title = #{title} </if>
+		  		  <if test="content != null and content != ''"> and content = #{content} </if>
+		  		  <if test="plotId != null and plotId != ''"> and plot_id = #{plotId} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="statue != null and statue != ''"> and statue = #{statue} </if>
+		  		</where>
+	</select>
+	
+	<select id="getPlotPhone" resultType="String">
+		select phone from t_plot where id = #{value}
+	</select>
+	<select id="complaintId" resultType="int">
+		select nextval('complaint_sql') from dual
+	</select>
+	<insert id="save" parameterType="com.yinwang.information.domain.ComplaintDO">
+		insert into t_complaint
+		(
+			`id`, 
+			`type`, 
+			`title`, 
+			`content`, 
+			`plot_id`, 
+			`user_id`, 
+			`statue`,
+			add_time
+		)
+		values
+		(
+			#{id}, 
+			#{type}, 
+			#{title}, 
+			#{content}, 
+			#{plotId}, 
+			#{userId}, 
+			#{statue},
+			#{addTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.ComplaintDO">
+		update t_complaint 
+		<set>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="title != null">`title` = #{title}, </if>
+			<if test="content != null">`content` = #{content}, </if>
+			<if test="plotId != null">`plot_id` = #{plotId}, </if>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="statue != null">`statue` = #{statue}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_complaint where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_complaint where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

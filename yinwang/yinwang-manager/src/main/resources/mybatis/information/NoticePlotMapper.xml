@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.NoticePlotDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.NoticePlotDO">
+		select `id`,`notice_id`,`plot_id`,`add_time` from t_notice_plot where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.NoticePlotDO">
+		select `id`,`notice_id`,`plot_id`,`add_time` from t_notice_plot
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="noticeId != null and noticeId != ''"> and notice_id = #{noticeId} </if>
+		  		  <if test="plotId != null and plotId != ''"> and plot_id = #{plotId} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_notice_plot
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="noticeId != null and noticeId != ''"> and notice_id = #{noticeId} </if>
+		  		  <if test="plotId != null and plotId != ''"> and plot_id = #{plotId} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.yinwang.information.domain.NoticePlotDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_notice_plot
+		(
+			`notice_id`, 
+			`plot_id`, 
+			`add_time`
+		)
+		values
+		(
+			#{noticeId}, 
+			#{plotId}, 
+			#{addTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.NoticePlotDO">
+		update t_notice_plot 
+		<set>
+			<if test="noticeId != null">`notice_id` = #{noticeId}, </if>
+			<if test="plotId != null">`plot_id` = #{plotId}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_notice_plot where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_notice_plot where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

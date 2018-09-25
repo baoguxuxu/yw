@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left">
+							<button shiro:hasPermission="information:repair:batchRemove" type="button" class="btn  btn-danger"
+								onclick="batchRemove()">
+								<i class="fa fa-trash" aria-hidden="true"></i>删除
+							</button>
+						</div>
+						<div>
+							
+							<input id="userName" type="text" placeholder="业主姓名">
+							<input id="phone" type="text" placeholder="业主手机号">
+							<input id="reNames" type="text" placeholder="维修师傅">
+							<select id="repair_statue" placeholder="状态">
+								<option value="">状态</option>
+								<option value="1">已发单</option>
+								<option value="2">已接单</option>
+								<option value="3">已报价、服务中</option>
+								<option value="5">完成</option>
+								<option value="10">取消</option>
+							</select>
+							<br>
+							报修时间：<input id="addStaTime" type="text" placeholder="">
+							至：<input id="addEndTime" type="text" placeholder="">
+							维修时间：<input id="rstaTime" type="text" placeholder="">
+							至：<input id="rendTime" type="text" placeholder="">
+							
+							
+							<button onclick="reLoad()">查询</button>
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--shiro控制bootstraptable行内按钮看见性 来自bootdo的创新方案 -->
+		<div>
+			<script type="text/javascript">
+				var s_edit_h = 'hidden';
+				var s_remove_h = 'hidden';
+				var s_resetPwd_h = 'hidden';
+			</script>
+		</div>
+		<div shiro:hasPermission="information:repair:edit">
+			<script type="text/javascript">
+				s_edit_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="information:repair:remove">
+			<script type="text/javascript">
+				var s_remove_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="information:repair:resetPwd">
+			<script type="text/javascript">
+				var s_resetPwd_h = '';
+			</script>
+		</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script type="text/javascript" src="/js/appjs/information/repair/repair.js"></script>
+	<script type="text/javascript">
+		laydate.render({
+			elem: '#addStaTime',
+			type: 'datetime'
+		});
+		laydate.render({
+			elem: '#addEndTime',
+			type: 'datetime'
+		});
+		laydate.render({
+			elem: '#rstaTime',
+			type: 'datetime'
+		});
+		laydate.render({
+			elem: '#rendTime',
+			type: 'datetime'
+		});
+	</script>
+</body>
+</html>

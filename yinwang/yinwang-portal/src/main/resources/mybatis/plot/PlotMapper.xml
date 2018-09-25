@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.plot.dao.PlotDao">
+
+	<select id="get" resultType="com.yinwang.plot.domain.PlotDO">
+		select `id`,`name`,`user_name`,`phone`,`user_id`,`province`,`city`,`address`,`detailed_address`,`longitude`,`tower_num`,`unit_num`,`tier_num`,`property_fee`,`add_time`,`update_time`,`dalete_flag` from t_plot where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.plot.domain.PlotDO">
+		select `id`,`name`,`user_name`,`phone`,`user_id`,`province`,`city`,`address`,`detailed_address`,`longitude`,`tower_num`,`unit_num`,`tier_num`,`property_fee`,`add_time`,`update_time`,`dalete_flag` from t_plot
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="name != null and name != ''"> and name = #{name} </if>
+		  		  <if test="userName != null and userName != ''"> and user_name = #{userName} </if>
+		  		  <if test="phone != null and phone != ''"> and phone = #{phone} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="province != null and province != ''"> and province = #{province} </if>
+		  		  <if test="city != null and city != ''"> and city = #{city} </if>
+		  		  <if test="address != null and address != ''"> and address = #{address} </if>
+		  		  <if test="detailedAddress != null and detailedAddress != ''"> and detailed_address = #{detailedAddress} </if>
+		  		  <if test="longitude != null and longitude != ''"> and longitude = #{longitude} </if>
+		  		  <if test="towerNum != null and towerNum != ''"> and tower_num = #{towerNum} </if>
+		  		  <if test="unitNum != null and unitNum != ''"> and unit_num = #{unitNum} </if>
+		  		  <if test="tierNum != null and tierNum != ''"> and tier_num = #{tierNum} </if>
+		  		  <if test="propertyFee != null and propertyFee != ''"> and property_fee = #{propertyFee} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="daleteFlag != null and daleteFlag != ''"> and dalete_flag = #{daleteFlag} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="getcityList" resultType="String">
+		select distinct `city`  from t_plot where dalete_flag = 0
+	</select>
+	
+	<select id="getplotList" resultType="com.yinwang.plot.domain.PlotDO">
+		select  `id`,`name`  from t_plot where city = #{value} and dalete_flag = 0
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_plot
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="name != null and name != ''"> and name = #{name} </if>
+		  		  <if test="userName != null and userName != ''"> and user_name = #{userName} </if>
+		  		  <if test="phone != null and phone != ''"> and phone = #{phone} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="province != null and province != ''"> and province = #{province} </if>
+		  		  <if test="city != null and city != ''"> and city = #{city} </if>
+		  		  <if test="address != null and address != ''"> and address = #{address} </if>
+		  		  <if test="detailedAddress != null and detailedAddress != ''"> and detailed_address = #{detailedAddress} </if>
+		  		  <if test="longitude != null and longitude != ''"> and longitude = #{longitude} </if>
+		  		  <if test="towerNum != null and towerNum != ''"> and tower_num = #{towerNum} </if>
+		  		  <if test="unitNum != null and unitNum != ''"> and unit_num = #{unitNum} </if>
+		  		  <if test="tierNum != null and tierNum != ''"> and tier_num = #{tierNum} </if>
+		  		  <if test="propertyFee != null and propertyFee != ''"> and property_fee = #{propertyFee} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="daleteFlag != null and daleteFlag != ''"> and dalete_flag = #{daleteFlag} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.yinwang.plot.domain.PlotDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_plot
+		(
+			`name`, 
+			`user_name`, 
+			`phone`, 
+			`user_id`, 
+			`province`, 
+			`city`, 
+			`address`, 
+			`detailed_address`, 
+			`longitude`, 
+			`tower_num`, 
+			`unit_num`, 
+			`tier_num`, 
+			`property_fee`, 
+			`add_time`, 
+			`update_time`, 
+			`dalete_flag`
+		)
+		values
+		(
+			#{name}, 
+			#{userName}, 
+			#{phone}, 
+			#{userId}, 
+			#{province}, 
+			#{city}, 
+			#{address}, 
+			#{detailedAddress}, 
+			#{longitude}, 
+			#{towerNum}, 
+			#{unitNum}, 
+			#{tierNum}, 
+			#{propertyFee}, 
+			#{addTime}, 
+			#{updateTime}, 
+			#{daleteFlag}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.plot.domain.PlotDO">
+		update t_plot 
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="userName != null">`user_name` = #{userName}, </if>
+			<if test="phone != null">`phone` = #{phone}, </if>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="province != null">`province` = #{province}, </if>
+			<if test="city != null">`city` = #{city}, </if>
+			<if test="address != null">`address` = #{address}, </if>
+			<if test="detailedAddress != null">`detailed_address` = #{detailedAddress}, </if>
+			<if test="longitude != null">`longitude` = #{longitude}, </if>
+			<if test="towerNum != null">`tower_num` = #{towerNum}, </if>
+			<if test="unitNum != null">`unit_num` = #{unitNum}, </if>
+			<if test="tierNum != null">`tier_num` = #{tierNum}, </if>
+			<if test="propertyFee != null">`property_fee` = #{propertyFee}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="daleteFlag != null">`dalete_flag` = #{daleteFlag}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_plot where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_plot where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	  <select id="listArea" resultType="com.yinwang.plot.domain.TArea">
+		select `id`,`code`,`area_short`,`area_name`,`area_level`,`parent_code`,`tel_code`,`lng`,`lat`,`pinyin`,`merger_name` from t_area
+        <where>  
+		  		  <if test="areaLevel != null and areaLevel != ''"> and area_level = #{areaLevel} </if>
+		  		  <if test="parentCode != null and parentCode != ''"> and parent_code = #{parentCode} </if>
+		  		</where>
+	</select>
+</mapper>

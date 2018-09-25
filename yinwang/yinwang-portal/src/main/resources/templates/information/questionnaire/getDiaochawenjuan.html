@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh_CN" xmlns:th="http://www.thymeleaf.org"
+	xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="shortcut icon" href="/img/logo_bank_gfyh.png" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/base.css" type="text/css">
+<title>调查问卷</title>
+<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/Font.js"></script>
+<script src="/js/plugins/layer/layer.js"></script>
+<script type="text/javascript">
+	$(function() {
+		$("#detailsDD").html($("#details").val());
+	});
+	function shang(){
+		var quid = $("#quid").val();
+		var num = $("#num").val();
+		var tcpId = $("#tcpId").val();
+		window.location.href='/information/questionnaire/myQuestionnaireDetails?quid='+quid+'&num='+ (parseInt(num)-parseInt(1));
+	}
+	function xia(){
+		var quid = $("#quid").val();
+		var num = $("#num").val();
+		var tcpId = $("#tcpId").val();
+		window.location.href='/information/questionnaire/myQuestionnaireDetails?quid='+quid+'&num='+ (parseInt(num)+parseInt(1));
+	}
+</script>
+</head>
+<body>
+<div class="Top"><a href="/information/questionnaire/myQuestionnaire"><span></span></a>调查问卷</div>
+<div class="wenjuan">
+	<input id="isRadio" name="quid" th:value="${topic.isRadio}" type="hidden">
+	<input id="quid" name="quid" th:value="${topic.questionnaireId}" type="hidden">
+	<input id="num" name="num" th:value="${num}" type="hidden">
+	<input id="tcpId" name="tcpId" th:value="${topic.id}" type="hidden">
+	<input id="details" name="details" th:value="${topic.details}" type="hidden">
+	<!-- 0：单选；1：多选;2:填写 -->
+	<label th:if="${topic.isRadio == 0}" class="checkbox-inline">
+		<dl class="wen font-24 bg-white">
+			<dt><span>单选题</span><em class="font-30" th:text="${topic.name}">问答标题</em></dt>
+			<dd id="detailsDD"> </dd>
+		</dl>
+		<div class="xuanze bg-white font-24">
+			<h3>请选择</h3>
+			<label th:each="con:${listQueAnswer}" class="checkbox-inline">
+				<p><input type="radio" name="testradio" th:checked="${con.checked == '1'}"  disabled="disabled" th:text="${con.name}" /></p>
+			</label>
+		</div>			
+	</label>
+	<label th:if="${topic.isRadio == 1}" class="checkbox-inline">
+		<dl class="wen font-24 bg-white">
+			<dt><span>多选题</span><em class="font-30" th:text="${topic.name}">问答标题</em></dt>
+			<dd id="detailsDD"> </dd>
+		</dl>
+		<div class="xuanze bg-white font-24">
+			<h3>请选择</h3>
+			<label th:each="con:${listQueAnswer}" class="checkbox-inline">
+				<p><input type="checkbox" name="testradio" th:checked="${con.checked == '1'}" disabled="disabled"  th:text="${con.name}" /></p>
+			</label>
+		</div>			
+	</label>
+	<label th:if="${topic.isRadio == 2}" class="checkbox-inline">
+		<dl class="wen font-24 bg-white">
+			<dt><span>问答题</span><em class="font-30" th:text="${topic.name}">问答标题</em></dt>
+			<dd id="detailsDD"> </dd>
+		</dl>
+		<div class="daan bg-white">
+			<textarea readonly="readonly" id="theTxt" name="theTxt" cols="40" rows="6" placeholder="我的答案" wrap="virtual" th:text="${queAnswer.content}"></textarea>
+			<span>作答请在300以内...</span> 
+		</div>			
+	</label>
+	<div class="niu font-26">
+		<label th:if="${num < numTo}" >
+			<input type="submit" onclick="xia();" value="下一题"/>
+		</label>
+		<label th:if="${num > 1}" >
+			<input type="submit" onclick="shang();"  value="上一题"/>
+		</label>
+	</div>
+</div>
+
+</body>
+</html>
+

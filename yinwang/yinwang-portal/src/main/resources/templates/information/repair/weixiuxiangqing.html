@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="shortcut icon" href="/img/logo_bank_gfyh.png" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/base.css" type="text/css">
+<title>维修详情</title>
+<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/Font.js"></script>
+<script src="/js/plugins/layer/layer.js"></script>
+<script src="/js/plugins/layer/laydate/laydate.js"></script>
+<style>
+/*------------------------------定位------------------------------*/
+.GPS{background:#fff;margin-top:.25rem;overflow: hidden;padding:.25rem 0;}
+.GPS select{width: 2.5rem;font-size:.26rem;float: left;margin-left:.25rem;height: .46rem;border:1px solid #cfcfcf;color:#333;}
+.shi{background:#fff;margin:.25rem 0;height:1.2rem;line-height:1.2rem;}
+/*.shi span{float: left;font-size:.3rem;color:#3896ff;width:1.5rem;position: relative;padding-left:.25rem;}
+.shi span em{width:.18rem;height:1.2rem;position:absolute;top:0;right:0;background:url(../images/xiala.png) no-repeat center;-webkit-background-size: contain;background-size: contain;}*/
+.shi input{float: left;width:7rem;margin-left:.25rem;margin-top:.2rem;font-size:.23rem;border:1px solid #cfcfcf;border-radius:.55rem;padding:.24rem .74rem;outline:none;background:url(../images/sousuo.png) no-repeat .3rem center;-webkit-background-size:.28rem .28rem;background-size:.28rem .28rem;}
+.dqxq dt{line-height:.6rem;margin-top:.15rem;margin-left:.24rem;color:#666;}
+.dqxq dd{line-height:.88rem;background:#fff;width: 100%;padding-left:.24rem;position: relative;color:#333;border-bottom:1px solid #f1f1f1;}
+.dqxq dd span{color: #3896ff;height: .88rem;line-height: .88rem;position:absolute;top:0;right:.24rem;}
+</style>
+</head>
+<body>
+<div class="Top"><span onclick="javascript:history.back(-1);"></span>维修服务</div>
+<form lass="form-horizontal m-t" id="signupForm">
+
+
+<div id="userAddress" class="add font-30">
+	<dl>
+		<dd>请选择地址</dd>
+		<dd><em></em><span></span></dd>
+	</dl>
+	<img class="kuo" onclick="getAddressList();" src="/img/arr-big.png" alt=""/>
+</div>
+<input type="hidden" id="typeId" name="typeId" th:value="${listType0.id}">
+<input type="hidden" id="categoryId" name="categoryId" th:value="${listCategory0.id}">
+<input type="hidden" id="addId" name="addId" value="1">
+<div class="weixiu-txt font-26 bg-white">
+	<p><span>姓名</span><em th:text="${name}">王小二</em></p>
+	<p><span>联系电话</span><em th:text="${phone}">18500000000</em></p>
+	<p><span>维修时间</span><em><input  id="repairTime" name="repairTime" placeholder="请选择时间" type="text"></em></p>
+</div>
+
+<!--下拉列表-->
+<div class="leix bg-white font-26">
+	<div class="lei-big">
+		<span>报修类型</span>
+		<div class="nav" >
+			<p th:text="${listType0.name}"></p>
+			<ul class="new" >
+				<label th:each="con:${listType}">
+					<li th:value="${con.id}" th:text="${con.name}"></li>
+				</label>
+			</ul>
+		</div>
+	</div>
+	<div class="lei-big">
+		<span>报修类别</span>
+		<div class="st_nav">
+		
+			<p th:text="${listCategory0.name}"></p>
+			<ul class="st_new" >
+				<label th:each="con:${listCategory}">
+					<li th:value="${con.id}" th:text="${con.name}"></li>
+				</label>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<!--输入信息-->
+<div class="lei-shuru bg-white">
+	<textarea id="details" name="details" wrap="virtual" placeholder="请输入详细信息"></textarea> 
+	<p>
+		<!-- <span><img src="/img/lei-pic.png" alt=""/><em></em></span>
+		<span><img src="img/lei-add.png" alt=""/></span> -->
+		<span id="addFile0">
+			<input type="file" style="display: none;" onchange="udpateFileUrl(this,'0')" id="files0" name="listImg" accept="image/*" >
+			<label id="label0" for="files0"><img id="addFileImg0" src="/img/tousu-pic1.jpg" alt=""/></label>
+			<!-- <em onclick="deleteLi('addFile0');"></em> -->
+		</span>
+	</p>
+</div>
+
+<input class="tijiao font-26" type="button" id="findDxCode" onclick="save();" value="提交"/>
+</form>
+
+<div id="listAddress" style="display: none;">
+	<div class="new-add fangwu font-28">
+		<span>新增地址</span><a href="#" onclick="creadAddress();"><img src="/img/arr-big.png" alt=""/></a>
+	</div>
+	<!-- 地址列表 -->
+	<!--房屋信息-->
+	<!-- <div class="fangwu-msg font-24 bg-white">
+		<h3 th:class="${plot.relation == '房东' ? 'c-blue' : 'c-green'}">房屋信息</h3>
+		<p><i th:text="${user.name}"></i> <i th:text="${user.identityCard}"></i> <span class="bg-blue" th:text="${plot.relation}"></span></p>
+		<p class="dizhi" th:text="${plot.address}"></p>
+	</div> -->
+</div>
+<div id="creatAddress" style="display: none;">
+<!-- 地址新增 -->
+	<div id="addplotid">
+		<form id="signupFormAdd">
+
+		<div class="fangwu-add">
+			<ul>
+				<li class="on" onclick="chossef()" id="fangzhu"></li>
+				<li class="qinshu" onclick="chosseq()" id="qinshu"></li>
+				<li class="zuhu" onclick="chossez()" id="zuhu"></li>
+			</ul>
+		</div>
+		<input type="hidden" value="房东" name="relation" id="relation"/>
+		<div class="fangwu-add-txt bg-white" id="fangzhudiv">
+			<ul>
+				<li><span>真实姓名</span><em><input type="text" maxlength="6"  th:value="${user.name}"
+						placeholder="请输入姓名" name="username" id="username"/></em></li>
+				<input type="hidden" th:value="${user.id}" name="userId" id="userId"/>
+				<input type="hidden" value="" name="plotId" id="plotId"/>
+				<li><span>证件类型</span><em>身份证</em></li>
+				<li><span>请输入证件号码</span><em><input type="text" th:value="${user1.identityCard}" 
+						maxlength="18" placeholder="请输入房主身份证号码" name="identityCard"  id="identityCard"/></em>
+				</li>
+				<li  onclick="chossed()" style="border-top: .14rem solid #f1f1f1;"><span>房屋地址</span><em
+					name="dizhid"><i></i></em></li>
+			</ul>
+		</div>
+		<div class="fangwu-add-txt bg-white" id="otherdiv"
+			style="display: none">
+			<ul>
+				<li><span>房主姓名</span><em><input type="text" maxlength="6"
+						placeholder="请输入房主姓名" name="fangdongname" id="fangdongname"/></em></li>
+				<li><span>证件类型</span><em>身份证</em></li>
+				<li><span>请输入证件号码</span><em><input type="text"
+						maxlength="18" placeholder="请输入房主身份证号码" name="fangdongid"  id="fangdongid"/></em></li>
+				<li><span>请输入手机号码</span><em><input type="text"
+						maxlength="11" placeholder="请输入房主手机号码" name="fangdongphone"  id="fangdongphone"/></em></li>
+				<li onclick="chossed()" style="border-top: .14rem solid #f1f1f1;"><span>房屋地址</span><em
+					name="dizhid"><i></i></em></li>
+			</ul>
+		</div>
+		<input type="hidden" value="" name="address" id="address"/>
+		<input class="tijiao font-32" type="button" id="saveplot" value="提交" onclick="submitplot()"/>
+		</form>
+	</div>
+	<div id="dingweiid" style="display: none">
+<!-- 		<div class="Top">
+			<a href="/owner/addPlot"><span>&nbsp;</span></a>定位
+		</div> -->
+		
+		<div class="GPS">
+			<select id="cityId" name="cityId"
+					onchange="getplot()">
+						<div th:each="city:${cityList}">
+							<option th:value="${city}" th:text="${city}"></option>
+						</div>
+				</select> 
+				<select id="plotIds" name="plotIds">
+				<div th:each="plot:${plotList}">
+						<option th:value="${plot.id}" th:text="${plot.name}"></option>
+						</div>
+				</select>
+
+		</div>
+		<div class="shi">
+			<input type="text" placeholder="请输入楼号单元门牌号" id="addressd" />
+		</div>
+		<input class="tijiao font-32" type="submit" onclick="savedizhi();"
+			value="确定" />
+	</div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	$(function(){
+		$(".nav li").click(function(){
+			var li=$(this).text();
+			$("#typeId").val($(this).val());
+			$(".nav p").html(li);
+			$(".new").hide();
+	  
+		});
+		
+		laydate.render({
+			elem: '#repairTime',
+			type: 'datetime'
+		});
+		//报修类型
+		$(".nav p").click(function(){
+			var ul=$(".new");
+			if(ul.css("display")=="none"){
+				ul.slideDown();
+			}else{
+				ul.slideUp();
+			}
+		});
+		
+		//报修类别
+		$(".st_nav p").click(function(){
+			var ul=$(".st_new");
+			if(ul.css("display")=="none"){
+				ul.slideDown();
+			}else{
+				ul.slideUp();
+			}
+		});
+		
+		$(".st_nav li").click(function(){
+			var li=$(this).text();
+			$("#categoryId").val($(this).val());
+			$(".st_nav p").html(li);
+			$(".st_new").hide();
+		});
+		fangwu();
+	})
+
+	var i = 0;
+	var num = 0;
+	function deleteLi(id){
+		$("#"+id).remove();
+		num--;
+	} 
+
+	function udpateFileUrl(obj,id){
+		if(num >= 5){
+			alert('最多可上传5张');
+			return false;
+		}
+		var fileURL = getObjectURL(obj.files[0]);
+		if(fileURL) {
+			i++;
+			var li = '<span id="addFile'+i+'">';
+			li+='<input type="file" style="display: none;" onchange="udpateFileUrl(this,\''+i+'\')" id="files'+i+'" name="listImg" accept="image/*" >';
+			li+='<label id="label'+i+'" for="files'+i+'"><img id="addFileImg'+i+'" src="/img/tousu-pic1.jpg" alt=""/>';
+			//li+='<em onclick="deleteLi(\'addFile'+i+'\');"></em></label>';
+			li+='</label>';
+			li+='</span>';
+			$("#addFileImg"+id).attr("src", fileURL);
+			$("#addFile"+id).after(li) 
+			$("#addFile"+id).append('<em onclick="deleteLi(\'addFile'+id+'\');"></em>'); 
+			num++
+		}
+	}
+	
+	//建立一個可存取到該file的url
+	function getObjectURL(file) {
+		var url = null ; 
+		if (window.createObjectURL!=undefined) { // basic
+			url = window.createObjectURL(file) ;
+		} else if (window.URL!=undefined) { // mozilla(firefox)
+			url = window.URL.createObjectURL(file) ;
+		} else if (window.webkitURL!=undefined) { // webkit or chrome
+			url = window.webkitURL.createObjectURL(file) ;
+		}
+		return url;
+	}
+		
+	
+	function save() {
+		var repairTime = $('#repairTime').val();
+		if(repairTime == ''){
+			layer.msg("请选择维修时间")
+			return false;
+		}
+		$("#findDxCode").removeAttr("onclick");
+		for(var j = 0; j<= num;j++){
+			var files = $("#files"+j).val();
+			if(files == '' || typeof(files)=="undefined"){
+				deleteLi('addFile'+j);
+			}
+		}
+		var formData = new FormData(document.getElementById("signupForm"));
+		$.ajax({
+			cache : true,
+			type : "POST",
+			url : "/information/repair/save",
+			data : formData,// 你的formid
+			processData:false,
+			contentType:false,
+			async : false,
+			error : function(request) {
+				$("#findDxCode").bind("click",save);
+				layer.msg("Connection error");
+			},
+			success : function(data) {
+				if (data.code == 0) {
+					layer.msg("操作成功");
+					 setTimeout(function(){
+						 parent.location.href = '/index';
+ 					}, 2000 )
+				} else {
+					$("#findDxCode").bind("click",save);
+					layer.msg(data.msg)
+				}
+			}
+		});
+	}
+	
+	
+	function userAddress1(id,name,idNum,addressName,address){
+		var html = '';
+		html += ' <dl> ';
+		html += ' <dd>' + name + idNum +'</dd> ';
+		html += ' <dd><em>' + addressName + '</em><span>' + address + '</span></dd> ';
+		html += ' </dl> ';
+		html += ' <img class="kuo" onclick="getAddressList();" src="/img/arr-big.png" alt=""/> ';
+		$("#addId").val(id);
+		$("#userAddress").html(html);
+		$("#signupForm").show();
+		$("#listAddress").hide();
+		$('#creatAddress').hide();
+	}
+	function userAddress(id,name,idNum,addressName,address){
+		var html = '';
+		html += ' <dl> ';
+		html += ' <dd>' + name + idNum +'</dd> ';
+		html += ' <dd><em>' + addressName + '</em><span>' + address + '</span></dd> ';
+		html += ' </dl> ';
+		html += ' <img class="kuo" onclick="getAddressList();" src="/img/arr-big.png" alt=""/> ';
+		$("#addId").val(id);
+		$("#userAddress").html(html);
+	}
+	
+	
+	/*   查询房屋列表    */
+	
+	function getAddressList(){
+		$("#signupForm").hide();
+		$("#listAddress").show();
+		$('#creatAddress').hide();
+		fangwu();
+	}
+	function fangwu(){
+		$.ajax({
+			cache : true,
+			type : "POST",
+			url : "/information/repair/getAddressList",
+			data : {},// 你的formid
+			processData:false,
+			contentType:false,
+			async : false,
+			error : function(request) {
+				layer.alert("Connection error");
+			},
+			success : function(data) {
+				if (data.code == 0) {
+					var html = '';
+					html +=' <div class="new-add fangwu font-28"> ';
+					html +=' <span>新增地址</span><a href="#" ><img onclick="creadAddress();" src="/img/arr-big.png" alt=""/></a> ';
+					html +=' </div> ';
+					var user = data.user;
+					$.each(data.pdoL,function(i,plot){
+						//i为元素的索引，从0开始,j为当前处理的元素对象
+						//con += $(j).attr('tag')+',';
+						if( i ==0){
+							userAddress(plot.id,user.name, user.identityCard,plot.relation,plot.address);
+						}
+						html +=' <div class="fangwu-msg font-24 bg-white" onclick="userAddress1(' + plot.id + ',\''+user.name + '\',\'' + user.identityCard + '\',\'' + plot.relation + '\',\'' + plot.address + '\');"> ';
+						if(plot.relation == '房东'){
+							html +=' <h3 th:class="c-blue">房屋信息</h3>';
+						}else{
+							html +=' <h3 th:class="c-green">房屋信息</h3>';
+						}
+						html +=' <p><i>' + user.name + '</i> <i>' + user.identityCard + '</i> <span class="bg-blue">' + plot.relation + '</span></p>';
+						html +=' <p class="dizhi">' + plot.address + '</p>';
+						html +=' </div>';
+					});
+					$("#listAddress").html(html);
+				} else {
+					layer.alert(data.msg)
+				}
+			}
+		});
+	}
+	
+/*   新增房屋方法       */
+	
+	function creadAddress(){
+		$("#listAddress").hide();
+		$("#creatAddress").show();
+		$("#signupForm").hide();
+	}
+	
+	
+	function chossef() {
+		$('#fangzhu').addClass('on');
+		$('#qinshu').removeClass('on');
+		$('#zuhu').removeClass('on');
+		$('#fangzhudiv').show();
+		$('#otherdiv').hide();
+		$('#relation').val("房主");
+	}
+	function chosseq() {
+		$('#qinshu').addClass('on');
+		$('#fangzhu').removeClass('on');
+		$('#zuhu').removeClass('on');
+		$('#fangzhudiv').hide();
+		$('#otherdiv').show();
+		$('#relation').val("亲属");
+	}
+	function chossez() {
+		$('#zuhu').addClass('on');
+		$('#fangzhu').removeClass('on');
+		$('#qinshu').removeClass('on');
+		$('#fangzhudiv').hide();
+		$('#otherdiv').show();
+		$('#relation').val("租户");
+	}
+	function chossed() {
+		$('#addplotid').hide();
+		$('#dingweiid').show();
+	}
+
+	function getplot() {
+		var city = $("#cityId").val();
+
+		$.ajax({
+			url : '/owner/getplot',
+			data : {
+				'city' : city
+			},
+			type : "POST",
+			dataType : this.dataType,
+			async : this.async,
+			success : function(data) {
+				if (data.code == 0) {
+					var temp_html = "";
+					$.each(data.plotList, function(i, plot) {
+						temp_html += "<option value='"+plot.id+"'>" + plot.name
+								+ "</option>";
+					});
+					$("#plotIds").html(temp_html);
+				} else {
+					layer.msg(data.msg)
+				}
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("error: " + errorThrown);
+			}
+		});
+
+	}
+	function savedizhi() {
+		var cityd = $("#cityId").val();
+		var plotd = $("#plotIds").val();
+		var plotdtxt = $("#plotIds").find("option:selected").text();
+		var addressd = $("#addressd").val();
+		if (addressd == null | addressd == "") {
+			layer.msg("请输入详细地址");
+			return;
+		}
+	 	$('#addplotid').show();
+		$('#dingweiid').hide();
+		$('em[name="dizhid"]').html($.trim(cityd) + $.trim(plotdtxt) + $.trim(addressd));
+		$('#plotId').val(plotd);
+		$('#address').val($.trim(cityd) + $.trim(plotdtxt) + $.trim(addressd)); 
+
+	}
+	
+    function submitplot() {
+    	var phonePattern = /^1\d{10}$/; //手机号 /^1[3|5|7|8]\d{9}$/
+    	if($('#qinshu').hasClass('on')||$('#zuhu').hasClass('on')){
+        	if( $('#fangdongname').val()==null || $('#fangdongname').val()=="" ){
+        		layer.msg("请输入房东姓名"); return;
+        	}
+        	if( $('#fangdongid').val()==null || $('#fangdongid').val()=="" ){
+        		layer.msg("请输入房东身份证号"); return;
+        	}
+        	if( $('#fangdongphone').val()==null || $('#fangdongphone').val()=="" ){
+        		layer.msg("请输入房东手机号"); return;
+        	}
+    		if(phonePattern.test($('#fangdongphone').val())==false){
+    			layer.msg("请输入正确手机号");
+    			return false;
+    		}
+    		if(!isCardNo($.trim($('#fangdongid').val()))){
+    			layer.msg('身份证号不正确');
+    			return;
+    		}
+    	}else{
+        	if( $('#username').val()==null || $('#username').val()=="" ){
+        		layer.msg("请输入姓名"); return;
+        	}
+        	if( $('#identityCard').val()==null || $('#identityCard').val()=="" ){
+        		layer.msg("请输入身份证号"); return;
+        	}
+  		   if(!isCardNo($.trim($('#identityCard').val()))){
+  			  layer.msg('身份证号不正确');
+  			  return;
+  		    }
+    	}
+    	if( $('#address').val()==null || $('#address').val()==""){
+    		layer.msg("请选择房屋地址"); return;
+    	}
+    	$.ajax({
+			url : '/owner/saveplotQ',
+		 	data: $('#signupFormAdd').serialize(), 
+			type : "POST",
+			dataType : this.dataType,
+			async : this.async,
+			success : function(data) {
+				if (data.code == 0) {
+					layer.msg("保存成功");
+					getAddressList();
+				} else {
+					layer.msg(data.msg)
+				}
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("error: " + errorThrown);
+			}
+		});
+    }
+    //验证身份证 
+    function isCardNo(card) { 
+    	var pattern = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/; 
+    	return pattern.test(card); 
+    }
+</script>

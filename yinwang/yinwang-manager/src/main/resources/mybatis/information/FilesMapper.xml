@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.FilesDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.FilesDO">
+		select `id`,`type`,`table_id`,`url`,`statue`,`add_time` from t_files where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.FilesDO">
+		select `id`,`type`,`table_id`,`url`,`statue`,`add_time` from t_files
+		<where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="type != null and type != ''"> and type = #{type} </if>
+		  		  <if test="tableId != null and tableId != ''"> and table_id = #{tableId} </if>
+		  		  <if test="url != null and url != ''"> and url = #{url} </if>
+		  		  <if test="statue != null and statue != ''"> and statue = #{statue} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_files
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="type != null and type != ''"> and type = #{type} </if>
+		  		  <if test="tableId != null and tableId != ''"> and table_id = #{tableId} </if>
+		  		  <if test="url != null and url != ''"> and url = #{url} </if>
+		  		  <if test="statue != null and statue != ''"> and statue = #{statue} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.yinwang.information.domain.FilesDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_files
+		(
+			`type`, 
+			`table_id`, 
+			`url`, 
+			`statue`, 
+			`add_time`
+		)
+		values
+		(
+			#{type}, 
+			#{tableId}, 
+			#{url}, 
+			#{statue}, 
+			#{addTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.FilesDO">
+		update t_files 
+		<set>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="tableId != null">`table_id` = #{tableId}, </if>
+			<if test="url != null">`url` = #{url}, </if>
+			<if test="statue != null">`statue` = #{statue}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_files where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_files where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

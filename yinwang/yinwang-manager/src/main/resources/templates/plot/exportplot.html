@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">文件：</label>
+								<div class="col-sm-6">
+								    <input type="file" name="file" id="fileName"/>
+									<p style="color:red;">选择Excel文件,文件列必须满足模板中的列</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-5">
+									<button type="submit" class="btn btn-primary" onclick="save();">提交</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script>
+	function reLoad() {
+		$('#exampleTable').bootstrapTable('refresh');
+	}
+function save() {
+	var fileName=$('#fileName').val();
+	if(fileName==''){
+		alert('请选择需要上传的文件');
+		return;
+	}
+	var pifx=fileName.substring(fileName.lastIndexOf('.')+1,fileName.length);
+	if(pifx!='xls' && pifx!=='xlsx'){
+		alert('请选择后缀为xls/xlsx 的Excel文件!');
+		return;
+	}
+	
+	var formData = new FormData(document.getElementById("signupForm"));
+	$.ajax({
+		cache : true,
+		type : "POST",
+		url : "/plot/exportplotQ",
+		data : formData,// 你的formid
+		processData:false,
+		contentType:false,
+		async : false,
+		success : function(r) {
+			if (r.code == 0) {
+				parent.layer.msg(r.msg);
+				parent.reLoad();
+				var index = parent.layer.getFrameIndex(window.name); // 获取窗口索引
+				parent.layer.close(index);
+				
+			} else {
+				lparent.layer.alert(r.msg)
+			}
+		}
+	});
+}
+</script>
+</body>
+</html>

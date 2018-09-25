@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="shortcut icon" href="/img/logo_bank_gfyh.png" type="image/x-icon"/>
+<link rel="stylesheet" href="/css/base.css" type="text/css">
+<title>我的活动</title>
+<script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/Font.js"></script>
+</head>
+<body>
+<div class="Top"><span onclick="javascript:location.href='/owner/user';">&nbsp;</span>我的活动</div>
+<ul class="my-huodong bg-white">
+	<div th:each="qu:${questionnaireList}">
+		<li><a th:href="${'/information/questionnaire/myQuestionnaireDetails?quid='+qu.id+'&num=1'}"><span th:text="${qu.title}">调查问卷名称</span><em th:text="${qu.addTime}">2018-05-10</em></a></li>
+	</div>
+</ul>
+
+</body>
+</html>
+

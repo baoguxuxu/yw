@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.RepairDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.RepairDO">
+		select `id`,`user_id`,`add_id`,`type_id`,`category_id`,`repair_time`,`details`,`add_time`,`money`,`statue` from t_repair where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.RepairDO">
+		select `id`,`user_id`,`add_id`,`type_id`,`category_id`,`repair_time`,`details`,`add_time`,`money`,`statue` from t_repair
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="addId != null and addId != ''"> and add_id = #{addId} </if>
+		  		  <if test="typeId != null and typeId != ''"> and type_id = #{typeId} </if>
+		  		  <if test="categoryId != null and categoryId != ''"> and category_id = #{categoryId} </if>
+		  		  <if test="repairTime != null and repairTime != ''"> and repair_time = #{repairTime} </if>
+		  		  <if test="details != null and details != ''"> and details = #{details} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="money != null and money != ''"> and money = #{money} </if>
+		  		  <if test="statue != null and statue != ''"> and statue = #{statue} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_repair
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="addId != null and addId != ''"> and add_id = #{addId} </if>
+		  		  <if test="typeId != null and typeId != ''"> and type_id = #{typeId} </if>
+		  		  <if test="categoryId != null and categoryId != ''"> and category_id = #{categoryId} </if>
+		  		  <if test="repairTime != null and repairTime != ''"> and repair_time = #{repairTime} </if>
+		  		  <if test="details != null and details != ''"> and details = #{details} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="money != null and money != ''"> and money = #{money} </if>
+		  		  <if test="statue != null and statue != ''"> and statue = #{statue} </if>
+		  		</where>
+	</select>
+	
+ 	<select id="listMap" resultType="java.util.Map">
+		select 
+			tr.id,
+			tmt1.`name` as typeName,
+			tmt2.`name` as categoryName,
+			tr.statue,
+			tup.address,
+			date_format(tr.add_time, '%Y-%m-%d %H:%i') as addTime,
+			tr.money
+		from t_repair tr,t_user_plot tup,t_maintain_type tmt1,t_maintain_type tmt2
+		where tr.add_id = tup.id and tr.type_id = tmt1.id and tr.category_id = tmt2.id
+		<if test="userId != null and userId != ''"> and tr.user_id = #{userId} </if>
+		<if test="statue != null and statue != '' and statue != '-1' "> and tr.statue = #{statue} </if>
+	</select>
+	
+ 	
+	<select id="repairId" resultType="int">
+		select nextval('repair_sql') from dual
+	</select>
+	<insert id="save" parameterType="com.yinwang.information.domain.RepairDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_repair
+		(
+			id,
+			`user_id`, 
+			`add_id`, 
+			`type_id`, 
+			`category_id`, 
+			`repair_time`, 
+			`details`, 
+			`add_time`, 
+			`money`, 
+			`statue`
+		)
+		values
+		(
+			#{id}, 
+			#{userId}, 
+			#{addId}, 
+			#{typeId}, 
+			#{categoryId}, 
+			#{repairTime}, 
+			#{details}, 
+			#{addTime}, 
+			#{money}, 
+			#{statue}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.RepairDO">
+		update t_repair 
+		<set>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="addId != null">`add_id` = #{addId}, </if>
+			<if test="typeId != null">`type_id` = #{typeId}, </if>
+			<if test="categoryId != null">`category_id` = #{categoryId}, </if>
+			<if test="repairTime != null">`repair_time` = #{repairTime}, </if>
+			<if test="details != null">`details` = #{details}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="money != null">`money` = #{money}, </if>
+			<if test="statue != null">`statue` = #{statue}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_repair where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_repair where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

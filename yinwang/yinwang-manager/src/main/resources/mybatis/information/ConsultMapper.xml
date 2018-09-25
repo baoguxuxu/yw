@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.ConsultDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.ConsultDO">
+		select `id`,`type`,`for_names`,`for_ids`,`title`,`url`,`is_disabled`,`details`,`browse_num`,`add_time`,`update_time`,`delete_flag` from t_consult where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.ConsultDO">
+		select `id`,`type`,`for_names`,`for_ids`,`title`,`url`,`is_disabled`,`details`,`browse_num`,`add_time`,`update_time`,`delete_flag` from t_consult
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="type != null and type != ''"> and type = #{type} </if>
+		  		  <if test="forNames != null and forNames != ''"> and for_names = #{forNames} </if>
+		  		  <if test="forIds != null and forIds != ''"> and for_ids = #{forIds} </if>
+		  		  <if test="title != null and title != ''"> and title = #{title} </if>
+		  		  <if test="url != null and url != ''"> and url = #{url} </if>
+		  		  <if test="isDisabled != null and isDisabled != ''"> and is_disabled = #{isDisabled} </if>
+		  		  <if test="details != null and details != ''"> and details = #{details} </if>
+		  		  <if test="browseNum != null and browseNum != ''"> and browse_num = #{browseNum} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_consult
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="type != null and type != ''"> and type = #{type} </if>
+		  		  <if test="forNames != null and forNames != ''"> and for_names = #{forNames} </if>
+		  		  <if test="forIds != null and forIds != ''"> and for_ids = #{forIds} </if>
+		  		  <if test="title != null and title != ''"> and title = #{title} </if>
+		  		  <if test="url != null and url != ''"> and url = #{url} </if>
+		  		  <if test="isDisabled != null and isDisabled != ''"> and is_disabled = #{isDisabled} </if>
+		  		  <if test="details != null and details != ''"> and details = #{details} </if>
+		  		  <if test="browseNum != null and browseNum != ''"> and browse_num = #{browseNum} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+	</select>
+	<select id="getPlotList" resultType="java.util.Map">
+		select '0' as id,'-1' as pId, '全部小区' as name,'false' as checked from DUAL
+		UNION ALL
+		select tp.id as id,'0' as pId,tp.`name`, 
+		CASE
+			WHEN tcp.id is null THEN 'false'
+			ELSE 'true'
+		END as checked from t_plot tp
+		LEFT JOIN t_consult_plot tcp ON tp.id = tcp.plot_id and tcp.consult_id = #{consult_id}
+		where tp.dalete_flag = 0
+	</select>
+	
+	<select id="consultId" resultType="int">
+		select nextval('consult_sql') from dual
+	</select>
+	<insert id="save" parameterType="com.yinwang.information.domain.ConsultDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_consult
+		(
+			id,
+			`type`, 
+			`for_names`, 
+			`for_ids`, 
+			`title`, 
+			`url`, 
+			`is_disabled`, 
+			`details`, 
+			`browse_num`, 
+			`add_time`, 
+			`update_time`, 
+			`delete_flag`
+		)
+		values
+		(
+			#{id},
+			#{type}, 
+			#{forNames}, 
+			#{forIds}, 
+			#{title}, 
+			#{url}, 
+			#{isDisabled}, 
+			#{details}, 
+			#{browseNum}, 
+			#{addTime}, 
+			#{updateTime}, 
+			#{deleteFlag}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.ConsultDO">
+		update t_consult 
+		<set>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="forNames != null">`for_names` = #{forNames}, </if>
+			<if test="forIds != null">`for_ids` = #{forIds}, </if>
+			<if test="title != null">`title` = #{title}, </if>
+			<if test="url != null">`url` = #{url}, </if>
+			<if test="isDisabled != null">`is_disabled` = #{isDisabled}, </if>
+			<if test="details != null">`details` = #{details}, </if>
+			<if test="browseNum != null">`browse_num` = #{browseNum}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="deleteFlag != null">`delete_flag` = #{deleteFlag}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_consult where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_consult where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

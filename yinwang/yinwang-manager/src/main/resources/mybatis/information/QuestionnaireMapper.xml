@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.QuestionnaireDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.QuestionnaireDO">
+		select `id`,`title`,`details`,`for_names`,`for_ids`,`number`,`participant`,
+		`start_time`,`end_time`,
+		date_format(start_time, '%Y-%m-%d %H:%i:%s') AS startTime1,
+		date_format(end_time, '%Y-%m-%d %H:%i:%s') AS endTime1,
+		`is_show`,`add_time`,`update_time`,`delete_flag` 
+		from t_questionnaire where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.QuestionnaireDO">
+		select 
+			`id`,`title`,`details`,`for_names`,`for_ids`,
+			(select count(1) from t_user where register_time &lt; t_questionnaire.end_time) as number,
+			(select count(1) from t_que_complete where questionnaire_id = t_questionnaire.id) as participant,
+			`start_time`,`end_time`,`start_time` as startTime1,`end_time` as endTime1,
+			`is_show`,`add_time`,`update_time`,`delete_flag` 
+		from t_questionnaire
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="title != null and title != ''"> and title like concat('%',#{title},'%') </if>
+		  		  <if test="details != null and details != ''"> and details = #{details} </if>
+		  		  <if test="forNames != null and forNames != ''"> and for_names = #{forNames} </if>
+		  		  <if test="forIds != null and forIds != ''"> and for_ids = #{forIds} </if>
+		  		  <if test="number != null and number != ''"> and number = #{number} </if>
+		  		  <if test="participant != null and participant != ''"> and participant = #{participant} </if>
+		  		  <if test="startTime != null and startTime != ''"> and start_time = #{startTime} </if>
+		  		  <if test="endTime != null and endTime != ''"> and end_time = #{endTime} </if>
+		  		  <if test="isShow != null and isShow != ''"> and is_show = #{isShow} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_questionnaire
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="title != null and title != ''"> and title like concat('%',#{title},'%') </if>
+		  		  <if test="details != null and details != ''"> and details = #{details} </if>
+		  		  <if test="forNames != null and forNames != ''"> and for_names = #{forNames} </if>
+		  		  <if test="forIds != null and forIds != ''"> and for_ids = #{forIds} </if>
+		  		  <if test="number != null and number != ''"> and number = #{number} </if>
+		  		  <if test="participant != null and participant != ''"> and participant = #{participant} </if>
+		  		  <if test="startTime != null and startTime != ''"> and start_time = #{startTime} </if>
+		  		  <if test="endTime != null and endTime != ''"> and end_time = #{endTime} </if>
+		  		  <if test="isShow != null and isShow != ''"> and is_show = #{isShow} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+	</select>
+	<select id="countOption" resultType="int">
+		SELECT count(1) FROM t_topic tt,t_option to1
+		where tt.id = to1.topic_id and tt.questionnaire_id =  #{value}
+	</select>
+	<select id="counttopic" resultType="int">
+		select count(1) from t_topic where is_radio = 2 and questionnaire_id =  #{value}
+	</select>
+	
+	<select id="getPlotList" resultType="java.util.Map">
+		select '0' as id,'-1' as pId, '全部小区' as name,'false' as checked from DUAL
+		UNION ALL
+		select tp.id as id,'0' as pId,tp.`name`, 
+		CASE
+			WHEN tcp.id is null THEN 'false'
+			ELSE 'true'
+		END as checked from t_plot tp
+		LEFT JOIN t_questionnaire_plot tcp ON tp.id = tcp.plot_id and  tcp.questionnaire_id = #{questionnaire_id}
+		where tp.dalete_flag = 0
+	</select>
+	
+	<select id="questionnaireId" resultType="int">
+		select nextval('questionnaire_sql') from dual
+	</select>
+	<insert id="save" parameterType="com.yinwang.information.domain.QuestionnaireDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_questionnaire
+		(
+			id,
+			`title`, 
+			`details`, 
+			`for_names`, 
+			`for_ids`, 
+			`number`, 
+			`participant`, 
+			`start_time`, 
+			`end_time`, 
+			`is_show`, 
+			`add_time`, 
+			`update_time`, 
+			`delete_flag`
+		)
+		values
+		(
+			#{id},
+			#{title}, 
+			#{details}, 
+			#{forNames}, 
+			#{forIds}, 
+			#{number}, 
+			#{participant}, 
+			#{startTime}, 
+			#{endTime}, 
+			#{isShow}, 
+			#{addTime}, 
+			#{updateTime}, 
+			#{deleteFlag}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.QuestionnaireDO">
+		update t_questionnaire 
+		<set>
+			<if test="title != null">`title` = #{title}, </if>
+			<if test="details != null">`details` = #{details}, </if>
+			<if test="forNames != null">`for_names` = #{forNames}, </if>
+			<if test="forIds != null">`for_ids` = #{forIds}, </if>
+			<if test="number != null">`number` = #{number}, </if>
+			<if test="participant != null">`participant` = #{participant}, </if>
+			<if test="startTime != null">`start_time` = #{startTime}, </if>
+			<if test="endTime != null">`end_time` = #{endTime}, </if>
+			<if test="isShow != null">`is_show` = #{isShow}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="deleteFlag != null">`delete_flag` = #{deleteFlag}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_questionnaire where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_questionnaire where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

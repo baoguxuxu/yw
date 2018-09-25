@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.information.dao.OptionDao">
+
+	<select id="get" resultType="com.yinwang.information.domain.OptionDO">
+		select `id`,`topic_id`,`name`,`num`,`account_for`,`add_time`,`update_time`,`delete_flag` from t_option where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.information.domain.OptionDO">
+		select top.id,top.topic_id,top.name,top.account_for,top.add_time,top.update_time,top.delete_flag, 
+		(select count(1) from t_que_answer tqa where tqa.option_id = top.id) as num,
+		(select count(1) from t_que_answer tqa where tqa.topic_id = top.topic_id) as totalNum
+		from t_option top
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="topicId != null and topicId != ''"> and top.topic_id = #{topicId} </if>
+		  		  <if test="name != null and name != ''"> and top.name like concat('%',#{name},'%') </if>
+		  		  <if test="num != null and num != ''"> and top.num = #{num} </if>
+		  		  <if test="accountFor != null and accountFor != ''"> and top.account_for = #{accountFor} </if>
+		  		  <if test="addTime != null and addTime != ''"> and top.add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and top.update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and top.delete_flag = #{deleteFlag} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_option
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="topicId != null and topicId != ''"> and topic_id = #{topicId} </if>
+		  		  <if test="name != null and name != ''"> and name like concat('%',#{name},'%') </if>
+		  		  <if test="num != null and num != ''"> and num = #{num} </if>
+		  		  <if test="accountFor != null and accountFor != ''"> and account_for = #{accountFor} </if>
+		  		  <if test="addTime != null and addTime != ''"> and add_time = #{addTime} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.yinwang.information.domain.OptionDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_option
+		(
+			`topic_id`, 
+			`name`, 
+			`num`, 
+			`account_for`, 
+			`add_time`, 
+			`update_time`, 
+			`delete_flag`
+		)
+		values
+		(
+			#{topicId}, 
+			#{name}, 
+			#{num}, 
+			#{accountFor}, 
+			#{addTime}, 
+			#{updateTime}, 
+			#{deleteFlag}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.information.domain.OptionDO">
+		update t_option 
+		<set>
+			<if test="topicId != null">`topic_id` = #{topicId}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="num != null">`num` = #{num}, </if>
+			<if test="accountFor != null">`account_for` = #{accountFor}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="deleteFlag != null">`delete_flag` = #{deleteFlag}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_option where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_option where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

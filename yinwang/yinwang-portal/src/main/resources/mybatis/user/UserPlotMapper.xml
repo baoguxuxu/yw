@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yinwang.owneruser.dao.UserPlotDao">
+
+	<select id="get" resultType="com.yinwang.owneruser.domain.UserPlotDO">
+		select `id`,`user_id`,`plot_id`,`delete_flag`,`address`,`relation`,`fangdongname`,`fangdongid`,`fangdongphone` from t_user_plot where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.yinwang.owneruser.domain.UserPlotDO">
+		select `id`,`user_id`,`plot_id`,`delete_flag`,`address`,`relation` from t_user_plot
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="plotId != null and plotId != ''"> and plot_id = #{plotId} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		  <if test="address != null and address != ''"> and address = #{address} </if>
+		  		  <if test="relation != null and relation != ''"> and relation = #{relation} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="listbyid" resultType="com.yinwang.owneruser.domain.UserPlotDO">
+		select `id`,`user_id`,`plot_id`,`delete_flag`,`address`,`relation`,`mianji`,`wuyefei` from t_user_plot where user_id = #{value}
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_user_plot
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+		  		  <if test="plotId != null and plotId != ''"> and plot_id = #{plotId} </if>
+		  		  <if test="deleteFlag != null and deleteFlag != ''"> and delete_flag = #{deleteFlag} </if>
+		  		  <if test="address != null and address != ''"> and address = #{address} </if>
+		  		  <if test="relation != null and relation != ''"> and relation = #{relation} </if>
+		  		</where>
+	</select>
+	 
+		<insert id="save" parameterType="com.yinwang.owneruser.domain.UserPlotDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_user_plot
+		(
+			`user_id`, 
+			`plot_id`, 
+			`delete_flag`, 
+			`address`, 
+			`relation`, 
+			`fangdongname`, 
+			`fangdongid`,
+			`fangdongphone`
+		)
+		values
+		(
+			#{userId}, 
+			#{plotId}, 
+			#{deleteFlag}, 
+			#{address}, 
+			#{relation}, 
+			#{fangdongname}, 
+			#{fangdongid},
+			#{fangdongphone}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.yinwang.owneruser.domain.UserPlotDO">
+		update t_user_plot 
+		<set>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="plotId != null">`plot_id` = #{plotId}, </if>
+			<if test="deleteFlag != null">`delete_flag` = #{deleteFlag}, </if>
+			<if test="address != null">`address` = #{address}, </if>
+			<if test="relation != null">`relation` = #{relation}, </if>
+			<if test="fangdongname != null">`fangdongname` = #{fangdongname}, </if>
+			<if test="fangdongid != null">`fangdongid` = #{fangdongid}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_user_plot where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_user_plot where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

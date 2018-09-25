@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">小区名称：</label>
+								<div class="col-sm-4">
+									<input id="name" name="name" class="form-control" type="text">
+								</div>
+								<label class="col-sm-2 control-label">联系人：</label>
+								<div class="col-sm-4">
+									<select id="userName" name="userName" data-placeholder="选择负责人" class="form-control chosen-select" tabindex="2" style="width: 100%">
+										<div th:each="user:${users}">
+											<option th:value="${user.userId}" th:text="${user.name}"></option>
+										</div>
+									</select>
+								</div>
+							</div>
+						<!-- 	<div class="form-group">
+								<label class="col-sm-2 control-label">联系电话：</label>
+								<div class="col-sm-4">
+									<input id="phone" name="phone" class="form-control" type="text">
+								</div>
+								<label class="col-sm-2 control-label">登录账号：</label>
+								<div class="col-sm-4">
+									<input id="userId" name="userId" class="form-control"
+										type="text">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">初始密码：</label>
+								<div class="col-sm-4">
+									<input id="password" name="password" class="form-control" type="text">
+								</div>
+								<label class="col-sm-2 control-label">确认密码：</label>
+								<div class="col-sm-4">
+									<input id="st-password" name="st-password" class="form-control"
+										type="text">
+								</div>
+							</div>
+						  <input type="hidden" name="roleIds" id="roleIds">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">角色选择：</label>
+								<div class="col-sm-8">
+									<label th:each="role:${roles}" class="checkbox-inline">
+										<input name="role" type="checkbox" th:value="${role.roleId}"
+										th:text="${role.roleName}">
+									</label>
+								</div>
+							</div> -->
+							<div class="form-group">
+							<span id="areaSelect">
+								<label class="col-sm-2 control-label">小区地址：</label>
+								<div class="col-sm-2">
+									<select id="province" name="province" data-placeholder="选择省" class="form-control chosen-select" tabindex="2" style="width: 100%">
+										<option value="北京省">北京省</option>
+									</select>
+								</div>
+								<div class="col-sm-2">
+									<select id="city" name="city" data-placeholder="选择市" class="form-control chosen-select" tabindex="2" style="width: 100%">
+										<option value="北京市">北京市</option>
+									</select>
+								</div>
+								</span>
+								<div class="col-sm-6">
+									<input id="detailedAddress" name="detailedAddress"
+										class="form-control" type="text" placeholder="详细地址">
+								</div>
+							</div>
+						<!--  <div>
+			        	<span>所在地区：</span>
+			        	<span id="areaSelect" style="width:66% !important;float:left !important;text-align:left !important;">
+				            <select class="prov" style="width:110px;margin-right:0px;"></select>
+				            <select class="city" style="width:144px;margin-right:0px;"></select>
+				            <select id="receRegion" name="receRegion" class="dist" style="width:150px;"></select>
+			            </span>
+			         </div> -->
+							<div><h4>小区管理</h4></div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">小区楼数：</label>
+								<div class="col-sm-4">
+									<input id="towerNum" name="towerNum" class="form-control"
+										type="text">
+								</div>
+								<label class="col-sm-2 control-label">单元数：</label>
+								<div class="col-sm-4">
+									<input id="unitNum" name="unitNum" class="form-control"
+										type="text">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">层数：</label>
+								<div class="col-sm-4">
+									<input id="tierNum" name="tierNum" class="form-control"
+										type="text">
+								</div>
+<!-- 								<label class="col-sm-2 control-label">物业费：</label>
+								<div class="col-sm-2">
+									<input id="propertyFee" name="propertyFee" class="form-control"
+										type="text">
+								</div>
+								元/月 -->
+							</div>
+							<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-5">
+									<button type="submit" class="btn btn-primary">提交</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/appjs/plot/add.js"></script>
+	<script type="text/javascript" src="/js/jquery.areaSelect.js"></script>
+	<script>
+$(function(){
+	//demo05
+	$("#areaSelect").areaSelect({
+		url:"/plot/getArea",
+		provCode:"${provCode}",
+		cityCode:"${cityCode}",
+		distCode:"${distCode}",
+		nodata:"none"
+	});
+
+});
+</script>
+</body>
+</html>

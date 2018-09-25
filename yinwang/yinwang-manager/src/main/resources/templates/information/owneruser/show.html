@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+						<div>
+							<h4>基本信息</h4>
+						</div>
+					<div class="ibox-content">
+						<div class="form-group">
+							<label class="col-sm-3 control-label">业主姓名：</label>
+							<div class="col-sm-8">
+								<input th:value="${user.name}" class="form-control" readonly>
+							</div>
+							</div>
+							<div class="form-group">
+							<label class="col-sm-3 control-label">身份：</label>
+							<div class="col-sm-8">
+								<input th:value="${user.relation}" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="form-group">
+							
+							<label class="col-sm-3 control-label">手机号：</label>
+							<div class="col-sm-8">
+								<input id="phone" name="phone" th:value="${user.phone}"
+									class="form-control" readonly>
+							</div>
+							</div>
+							<div class="form-group">
+							<label class="col-sm-3 control-label">面积：</label>
+							<div class="col-sm-8">
+								<input id="serveNum" name="serveNum" th:value="${user.mianji}"
+									class="form-control" readonly>
+							</div>
+							
+						</div>
+						<div class="form-group">
+							
+							<label class="col-sm-3 control-label">地址：</label>
+							<div class="col-sm-8">
+								<input id="payNum" name="payNum" th:value="${user.address}"
+									class="form-control" readonly>
+							</div>
+							
+						</div>
+						<div class="form-group">
+							
+							
+							<label class="col-sm-3 control-label">物业费：</label>
+							<div class="col-sm-6">
+								<input id="balance" name="balance" th:value="${user.wuyefei}"
+									class="form-control" readonly>
+							</div>
+							<div class="col-sm-2">
+								元/每平
+							</div>
+							
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- <div>
+			<h4>小区信息</h4>
+		</div>
+				<div style="width: 1050px; height: 200px; overflow: scroll;"
+			align="center">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>所在小区</th>
+						<th>身份</th>
+					</tr>
+				</thead>
+				<tbody>
+				<label th:each="plot:${plotMap}" class="checkbox-inline">
+					<tr>
+						<td th:text="${plot.address}"></td>
+						<td th:text="${plot.relation}"></td>
+					</tr>
+				</label>
+				</tbody>
+			</table>
+		</div>
+		
+		<div>
+			<h4>缴费信息</h4>
+		</div>
+		<div style="width: 1050px; height: 200px; overflow: scroll;"
+			align="center">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>服务名称</th>
+						<th>所在小区</th>
+						<th>楼牌号</th>
+						<th>房间号</th>
+						<th>缴费</th>
+						<th>月份</th>
+						<th>缴费时间</th>
+						<th>类型</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+					</tr>
+					<tr>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+					</tr>
+					<tr>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+						<td>Tanmay</td>
+						<td>Bangalore</td>
+					</tr>
+				</tbody>
+			</table>
+		</div> -->
+		<!-- <div>
+			<h4>服务信息</h4>
+		</div>
+		<div style="width: 1050px; height: 200px; overflow: scroll;"
+			align="center">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>所在小区</th>
+						<th>报修类别</th>
+						<th>维修时间</th>
+						<th>价钱</th>
+					</tr>
+				</thead>
+				<tbody>
+				<label th:each="re:${listMap}" class="checkbox-inline">
+					<tr>
+						<td th:text="${re.address}"></td>
+						<td th:text="${re.categoryName + '-' + re.typeName}"></td>
+						<td th:text="${re.addTime}"></td>
+						<td th:text="${'¥ ' + re.money }"></td>
+					</tr>
+				</label>
+				</tbody>
+			</table>
+		</div> -->
+
+	</div>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/appjs/owneruser/show.js">
+		
+	</script>
+</body>
+</html>
