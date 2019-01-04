@@ -97,10 +97,10 @@ public class OwnerUserController extends BaseController {
 	@Log("查看用户")
 	@GetMapping("/show/{id}/{address}")
 	String edit(Model model, @PathVariable("id") Long id, @PathVariable("address") String address) {
-//		Map<String, Object> map = new HashMap<String, Object>();
-//		map.put("userId", id);
-//		List<Map<String, Object>> listMap = this.repairService.listMap(map);
-//		List<UserPlotDO> plotMap = plotService.listbyid(id);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("userId", id);
+		List<Map<String, Object>> listMap = this.repairService.listMap(map);
+		List<UserPlotDO> plotMap = plotService.listbyid(id);
 		OwnerUserDO user = new OwnerUserDO();
 		user.setId(id);
 		user.setAddress(address);
@@ -112,18 +112,18 @@ public class OwnerUserController extends BaseController {
 			userDO = userService.get(id);
 		}
 		model.addAttribute("user", userDO);
-//		model.addAttribute("listMap", listMap);
-//		model.addAttribute("plotMap", plotMap);
+		model.addAttribute("listMap", listMap);
+		model.addAttribute("plotMap", plotMap);
 		return prefix+"/show";
 	}
 	@RequiresPermissions("sys:user:edit")
 	@Log("查看用户")
 	@GetMapping("/edit/{id}/{address}")
 	String edit1(Model model, @PathVariable("id") Long id, @PathVariable("address") String address) {
-//		Map<String, Object> map = new HashMap<String, Object>();
-//		map.put("userId", id);
-//		List<Map<String, Object>> listMap = this.repairService.listMap(map);
-//		List<UserPlotDO> plotMap = plotService.listbyid(id);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("userId", id);
+		List<Map<String, Object>> listMap = this.repairService.listMap(map);
+		List<UserPlotDO> plotMap = plotService.listbyid(id);
 		OwnerUserDO user = new OwnerUserDO();
 		user.setId(id);
 		user.setAddress(address);
@@ -135,8 +135,8 @@ public class OwnerUserController extends BaseController {
 			userDO = userService.get(id);
 		}
 		model.addAttribute("user", userDO);
-//		model.addAttribute("listMap", listMap);
-//		model.addAttribute("plotMap", plotMap);
+		model.addAttribute("listMap", listMap);
+		model.addAttribute("plotMap", plotMap);
 		return prefix+"/edit";
 	}
 

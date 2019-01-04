@@ -70,7 +70,7 @@ public class ProcessServiceImpl implements ProcessService {
 
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(id).singleResult();
 
-
+       
         String resourceName = "";
         if (resType.equals("image")) {
             resourceName = processDefinition.getDiagramResourceName();

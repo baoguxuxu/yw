@@ -10,7 +10,7 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/yinwang?useUnicode=true&characterEncoding=utf8
     username: root
-    password: tmn521hjj
+    password: Tmn521hjj
     initialSize: 1
     minIdle: 3
     maxActive: 20
